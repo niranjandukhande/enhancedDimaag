@@ -1,15 +1,15 @@
-import Signin from "@/components/auth/signIn";
-import Signup from "@/components/auth/signUp";
-import SSOCallback from "@/components/auth/ssoCallBack";
-import Dashboard from "@/components/dashboard/home";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Explore from "./components/explore/explore";
-import Home from "./components/home";
-import Profile from "./components/profile/profile";
-import { ProtectedRoute } from "./middleware/protected";
-import { PublicRoute } from "./middleware/public";
-import Layout from "./components/layout";
-import MinimalNavbar from "./components/Layout/navbar1";
+import Signin from "@/components/auth/signIn"
+import Signup from "@/components/auth/signUp"
+import SSOCallback from "@/components/auth/ssoCallBack"
+import Dashboard from "@/components/dashboard/dashboard"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Explore from "./components/explore/explore"
+import Home from "./components/home"
+import Profile from "./components/profile/profile"
+import { ProtectedRoute } from "./middleware/protected"
+import { PublicRoute } from "./middleware/public"
+import Layout from "./components/layout"
+import MinimalNavbar from "./components/Layout/navbar1"
 
 export default function App() {
   return (
@@ -48,5 +48,5 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </>
-  );
+  )
 }
