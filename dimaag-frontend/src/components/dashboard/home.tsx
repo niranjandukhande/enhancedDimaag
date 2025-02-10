@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 function Dashboard() {
   const getUser = useUser();
   console.log(getUser);
+
   return (
     <>
       Dashboard

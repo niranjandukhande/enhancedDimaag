@@ -1,35 +1,52 @@
-// import {
-//   SignedIn,
-//   SignedOut,
-//   SignInButton,
-//   UserButton,
-// } from "@clerk/clerk-react"
-
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Signin from "@/components/auth/signIn";
-import Dashboard from "@/components/dashboard/home";
 import Signup from "@/components/auth/signUp";
 import SSOCallback from "@/components/auth/ssoCallBack";
+import Dashboard from "@/components/dashboard/home";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Explore from "./components/explore/explore";
 import Home from "./components/home";
+import Profile from "./components/profile/profile";
+import { ProtectedRoute } from "./middleware/protected";
+import { PublicRoute } from "./middleware/public";
+import Layout from "./components/layout";
+import MinimalNavbar from "./components/Layout/navbar1";
 
 export default function App() {
   return (
-    // <header>
-    //   <SignedOut>
-    //     <SignInButton />
-    //   </SignedOut>
-    //   <SignedIn>
-    //     <UserButton />
-    //   </SignedIn>
-    // </header>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signin" element={<Signin />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/ssocallback" element={<SSOCallback />} />
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <MinimalNavbar />
+        <Routes>
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signin"
+            element={
+              <PublicRoute>
+                <Signin />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/ssocallback" element={<SSOCallback />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
