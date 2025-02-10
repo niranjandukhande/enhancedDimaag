@@ -1,4 +1,5 @@
 import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 export const usersTable = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
   username: varchar({ length: 255 }).notNull().unique(),
@@ -11,3 +12,5 @@ export const usersTable = pgTable("users", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const userInsertSchema = createInsertSchema(usersTable);
