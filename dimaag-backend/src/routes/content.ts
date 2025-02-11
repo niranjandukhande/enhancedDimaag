@@ -1,5 +1,5 @@
 import express from "express"
-import { addContent } from "../controllers/insertContentController";
+import { addContent } from "../controllers/insertContentController"
 
 const router = express.Router()
 
@@ -9,8 +9,6 @@ router.get("/",(req , res)=>{
     })
 })
 
-router.post("/addContent",addContent)
+router.post("/",addContent)
 
-
-
-module.exports = router
+export default router

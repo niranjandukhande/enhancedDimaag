@@ -1,12 +1,13 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { SignOutButton, useUser } from "@clerk/clerk-react";
-import { Link } from "react-router-dom";
-import LinkModel from "./LinkModel";
+import { Button } from "@/components/ui/button"
+import { SignOutButton, useUser } from "@clerk/clerk-react"
+import { Link } from "react-router-dom"
+import LinkModel from "./LinkModel"
 
 function Dashboard() {
-  const { user } = useUser();
+  const { user } = useUser()
+  console.log(user)
 
   return (
     <div className="p-4">
@@ -23,10 +24,10 @@ function Dashboard() {
         <Button asChild variant="outline">
           <Link to="/signin">Sign In</Link>
         </Button>
-        <LinkModel />
+        <LinkModel userId={user?.id} />
       </div>
     </div>
-  );
+  )
 }
 
-export default Dashboard;
+export default Dashboard

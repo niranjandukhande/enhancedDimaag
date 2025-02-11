@@ -1,62 +1,91 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Youtube, Twitter, Instagram } from "lucide-react";
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { Youtube, Twitter, Instagram, Lock } from "lucide-react"
+import { createContent } from "@/api/createContent"
 
-function LinkModel() {
-  const [isOpen, setIsOpen] = useState(false);
+function LinkModel({ userId }: any) {
+  const [isOpen, setIsOpen] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     link: "",
     platform: "",
-  });
+    isPrivate: false,
+  })
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
-  };
+    }))
+  }
+
+  const handleSwitchChange = (checked: boolean) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      isPrivate: checked,
+    }))
+  }
 
   const handleSelectChange = (value: string) => {
     setFormData((prevData) => ({
       ...prevData,
       platform: value,
-    }));
-  };
+    }))
+  }
 
-  const handleSave = () => {
-    console.log("Saving data:", formData);
+  const handleSave = async () => {
+    console.log("Saving data:", formData)
+    console.log("userId is ", userId)
 
-    setIsOpen(false);
-  };
+    const contentDetails = {
+      title: formData.title,
+      typeOfContent: formData.platform,
+      description: formData.description,
+      isPublic: !formData.isPrivate,
+      userId: userId,
+    }
+
+    console.log(contentDetails)
+
+    try {
+      const newContent = await createContent(contentDetails)
+      console.log("Content created:", newContent)
+    } catch (err) {
+      console.error("Error inserting user:", err)
+      throw err // Ensure error is handled properly
+    }
+
+    setIsOpen(false)
+  }
 
   return (
     <div>
@@ -89,7 +118,7 @@ function LinkModel() {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="h-24 resize-none" // Fixed height and disabled resizing
+                  className="h-24 resize-none"
                 />
               </div>
               <div className="space-y-2">
@@ -132,6 +161,22 @@ function LinkModel() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center justify-between space-x-2">
+                <div className="flex items-center space-x-2">
+                  <Lock size={16} className="text-gray-500" />
+                  <Label
+                    htmlFor="isPrivate"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Private Link
+                  </Label>
+                </div>
+                <Switch
+                  id="isPrivate"
+                  checked={formData.isPrivate}
+                  onCheckedChange={handleSwitchChange}
+                />
+              </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave}>Save</Button>
@@ -140,7 +185,7 @@ function LinkModel() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
 
-export default LinkModel;
+export default LinkModel
