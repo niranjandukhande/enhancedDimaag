@@ -1,27 +1,25 @@
+import { contentType } from "@/types/content";
+import { useAuth } from "@clerk/clerk-react";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/v1/user/addContent"; 
-// interface ContentData {
-//   userId: string;
-//   title: string;
-//   typeOfContent: string;
-//   description: string; 
-//   isPublic: boolean;
-// }
-
-export const createContent = async ({userId, title, typeOfContent, description, isPublic}) => {
+async function createContent(contentData: contentType) {
+  const { getToken } = useAuth();
   try {
-    const response = await axios.post(API_URL, {
-      title,
-      typeOfContent,
-      description,
-      isPublic,
-      userId
-    });
+    const token = await getToken();
+    console.log("inside CREATE CONTENT", contentData);
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}content`,
+      {
+        contentData,
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-    return response.data;
-  } catch (error) {
-    console.error("Error creating content:", error.response?.data || error.message);
+    console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    console.error("Error creating content:", error);
     throw error;
   }
-};
+}
+export default createContent;

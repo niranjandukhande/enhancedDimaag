@@ -1,16 +1,9 @@
-import express from "express"
-import { Webhook } from "svix";
+import express from "express";
 import { userWebhook } from "../controllers/webHookController";
-var bodyParser = require("body-parser")
+var bodyParser = require("body-parser");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/test",(req , res)=>{
-    res.send({
-        message: "Hello"
-    })
-})
+router.post("/user", bodyParser.raw({ type: "application/json" }), userWebhook);
 
-router.post('/', bodyParser.raw({ type: 'application/json' }),userWebhook)
-
-module.exports = router
+export default router;

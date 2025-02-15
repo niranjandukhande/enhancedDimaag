@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { usersTable } from "./userModel";
 import { contentTable } from "./contentModel";
 
@@ -7,12 +7,18 @@ export const permissionTable = pgTable("permissions", {
   contentId: uuid()
     .notNull()
     .references(() => contentTable.id),
-  owner: uuid()
+  owner: varchar({ length: 255 })
     .notNull()
-    .references(() => usersTable.id),
-  sharesWith: uuid()
+    .references(() => usersTable.clerkId, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  sharesWith: varchar({ length: 255 })
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.clerkId, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   createdAt: timestamp().defaultNow(),
   updatedAt: timestamp()
     .defaultNow()

@@ -1,12 +1,12 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
-import 'dotenv/config'
+import "dotenv/config";
 export const app = express();
+import rootRouter from "./routes/index";
+import { clerkClient, requireAuth } from "@clerk/express";
 app.use(cors({ origin: "*", credentials: true }));
-
-
-const rootRouter = require("./routes/index")
-app.use("/api/v1",rootRouter)
-
-
-
+// app.use(requireAuth());
+// app.get("/", (req: Request, res: Response) => {
+//   res.send("Server is up and running");
+// });
+app.use("/api/v1", rootRouter);

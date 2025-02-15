@@ -1,91 +1,112 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Youtube, Twitter, Instagram, Lock } from "lucide-react"
-import { createContent } from "@/api/createContent"
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useAxiosClient } from "@/config/axios";
+import { contentSchema, contentType } from "@/types/content";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Instagram, Lock, Twitter, Youtube } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-function LinkModel({ userId }: any) {
-  const [isOpen, setIsOpen] = useState(false)
+function LinkModel() {
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     link: "",
     platform: "",
     isPrivate: false,
-  })
+  });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSwitchChange = (checked: boolean) => {
     setFormData((prevData) => ({
       ...prevData,
       isPrivate: checked,
-    }))
-  }
+    }));
+  };
 
   const handleSelectChange = (value: string) => {
     setFormData((prevData) => ({
       ...prevData,
       platform: value,
-    }))
-  }
-
+    }));
+  };
+  const api = useAxiosClient();
+  const queryClient = useQueryClient();
+  const contentSave = useMutation({
+    mutationFn: async (contentDetails: contentType) => {
+      const response = await api.post("/content", contentDetails);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      toast.success("Content added successfully");
+    },
+    onError: (error) => {
+      toast.error("Error adding content");
+      console.log("error", error);
+    },
+    onSettled: () => {
+      console.log("onSettled");
+      queryClient.invalidateQueries({
+        queryKey: ["content"],
+      });
+    },
+  });
   const handleSave = async () => {
-    console.log("Saving data:", formData)
-    console.log("userId is ", userId)
-
-    const contentDetails = {
-      title: formData.title,
-      typeOfContent: formData.platform,
-      description: formData.description,
-      isPublic: !formData.isPrivate,
-      userId: userId,
-    }
-
-    console.log(contentDetails)
-
     try {
-      const newContent = await createContent(contentDetails)
-      console.log("Content created:", newContent)
+      const contentDetails: contentType = {
+        title: formData.title,
+        typeOfContent: formData.platform,
+        description: formData.description,
+        isPublic: !formData.isPrivate,
+        link: formData.link,
+      };
+      const reqBody = contentSchema.safeParse(contentDetails);
+      if (reqBody.error) {
+        console.log("error", reqBody.error);
+        throw reqBody.error;
+      }
+      await contentSave.mutateAsync(contentDetails);
     } catch (err) {
-      console.error("Error inserting user:", err)
-      throw err // Ensure error is handled properly
+      console.error("Error inserting user:", err);
     }
 
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
   return (
     <div>
@@ -185,7 +206,7 @@ function LinkModel({ userId }: any) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
-export default LinkModel
+export default LinkModel;

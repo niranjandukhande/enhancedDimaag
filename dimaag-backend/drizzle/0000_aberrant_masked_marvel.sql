@@ -6,14 +6,14 @@ CREATE TABLE "contents" (
 	"isPublic" boolean DEFAULT false,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now(),
-	"userId" uuid NOT NULL
+	"userId" varchar(255) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "permissions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"contentId" uuid NOT NULL,
-	"owner" uuid NOT NULL,
-	"sharesWith" uuid NOT NULL,
+	"owner" varchar(255) NOT NULL,
+	"sharesWith" varchar(255) NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now()
 );
@@ -32,7 +32,7 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
-ALTER TABLE "contents" ADD CONSTRAINT "contents_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "contents" ADD CONSTRAINT "contents_userId_users_clerkId_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("clerkId") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "permissions" ADD CONSTRAINT "permissions_contentId_contents_id_fk" FOREIGN KEY ("contentId") REFERENCES "public"."contents"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "permissions" ADD CONSTRAINT "permissions_owner_users_id_fk" FOREIGN KEY ("owner") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "permissions" ADD CONSTRAINT "permissions_sharesWith_users_id_fk" FOREIGN KEY ("sharesWith") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "permissions" ADD CONSTRAINT "permissions_owner_users_clerkId_fk" FOREIGN KEY ("owner") REFERENCES "public"."users"("clerkId") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "permissions" ADD CONSTRAINT "permissions_sharesWith_users_clerkId_fk" FOREIGN KEY ("sharesWith") REFERENCES "public"."users"("clerkId") ON DELETE cascade ON UPDATE cascade;

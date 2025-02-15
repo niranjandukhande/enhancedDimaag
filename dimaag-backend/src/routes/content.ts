@@ -1,14 +1,9 @@
-import express from "express"
-import { addContent } from "../controllers/insertContentController"
+import express from "express";
+import { addContent, getContent } from "../controllers/contentController";
+import { verifyClerkSession } from "../middleware/verifyClerk";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/",(req , res)=>{
-    res.send({
-        message: "Hello"
-    })
-})
-
-router.post("/",addContent)
-
-export default router
+router.post("/", verifyClerkSession, addContent);
+router.get("/", verifyClerkSession, getContent);
+export default router;

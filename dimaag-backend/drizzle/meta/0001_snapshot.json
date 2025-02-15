@@ -1,6 +1,6 @@
 {
-  "id": "01176dac-bce2-459e-aede-4c3a8abff7cb",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "32f8591b-f9d5-45cf-af67-f67b88826fc6",
+  "prevId": "01176dac-bce2-459e-aede-4c3a8abff7cb",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -32,6 +32,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "link": {
+          "name": "link",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
         },
         "isPublic": {
           "name": "isPublic",

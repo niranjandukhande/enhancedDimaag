@@ -1,16 +1,6 @@
-import express from "express"
-import { addContent } from "../controllers/insertContentController";
+import express from "express";
+import { addContent } from "../controllers/contentController";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/",(req , res)=>{
-    res.send({
-        message: "Hello"
-    })
-})
-
-router.post("/addContent",addContent)
-
-
-
-module.exports = router
+export default router;

@@ -1,13 +1,16 @@
-import express from "express"
-const userRouter = require("./user")
-const webhookRouter = require("./webhook")
-import contentRouter from "./content"
+import express from "express";
+import webHookRouter from "./webhook";
+import userRouter from "./user";
+import contentRouter from "./content";
+import { clerkMiddleware, requireAuth } from "@clerk/express";
 
-const router = express.Router()
+const router = express.Router();
 
-router.use("/webhook",webhookRouter)
+router.use("/webhook", webHookRouter);
 
-router.use(express.json())
-router.use("/user",userRouter)
-router.use("/contetn",contentRouter)
-module.exports = router
+router.use(express.json());
+
+router.use("/user", userRouter);
+router.use(clerkMiddleware());
+router.use("/content", contentRouter);
+export default router;

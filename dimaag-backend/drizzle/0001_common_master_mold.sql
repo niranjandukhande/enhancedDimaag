@@ -1,0 +1,1 @@
+ALTER TABLE "contents" ADD COLUMN "link" varchar(255) NOT NULL;
