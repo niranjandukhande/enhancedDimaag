@@ -1,7 +1,7 @@
-import { useAuth } from "@clerk/clerk-react";
-import axios from "axios";
-import { useMemo } from "react";
-import { redirect } from "react-router-dom";
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
+import { useMemo } from 'react';
+import { redirect } from 'react-router-dom';
 
 export function useAxiosClient() {
   const { getToken } = useAuth();
@@ -9,7 +9,7 @@ export function useAxiosClient() {
     const axiosClient = axios.create({
       baseURL: import.meta.env.VITE_BACKEND_URL,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     axiosClient.interceptors.request.use(async (config) => {
@@ -25,10 +25,10 @@ export function useAxiosClient() {
       async (response) => response,
       async (error) => {
         if (error.response.status === 401) {
-          redirect("/signup");
+          redirect('/signup');
         }
         return Promise.reject(error);
-      }
+      },
     );
     return axiosClient;
   }, []);

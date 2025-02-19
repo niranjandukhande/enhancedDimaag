@@ -1,4 +1,4 @@
-import { clerkClient, createClerkClient } from "@clerk/express";
+import { createClerkClient } from '@clerk/express';
 
 const clerk = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,

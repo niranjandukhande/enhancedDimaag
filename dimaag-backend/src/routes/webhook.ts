@@ -1,9 +1,8 @@
-import express from "express";
-import { userWebhook } from "../controllers/webHookController";
-var bodyParser = require("body-parser");
+import express from 'express';
+import { userWebhook } from '@/controllers/webHookController';
 
 const router = express.Router();
 
-router.post("/user", bodyParser.raw({ type: "application/json" }), userWebhook);
+router.post('/user', express.raw({ type: 'application/json' }), userWebhook);
 
 export default router;

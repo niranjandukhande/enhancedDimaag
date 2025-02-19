@@ -1,6 +1,6 @@
-import { Outlet } from "react-router-dom";
-import MinimalNavbar from "./Layout/navbar1";
-import Footer from "./Layout/footer";
+import { Outlet } from 'react-router-dom';
+import MinimalNavbar from './Layout/navbar1';
+import Footer from './Layout/footer';
 
 function Layout() {
   return (

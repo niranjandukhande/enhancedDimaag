@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { OtpComponent } from "@/components/auth/utils/otpComponent";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useSignUp } from "@clerk/clerk-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { OtpComponent } from '@/components/auth/utils/otpComponent';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useSignUp } from '@clerk/clerk-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function SignUpComponent() {
   const { isLoaded, signUp } = useSignUp();
   const navigate = useNavigate();
-  const [emailAddress, setEmailAddress] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailAddress, setEmailAddress] = useState('');
+  const [password, setPassword] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +24,7 @@ export default function SignUpComponent() {
     if (!isLoaded) return;
 
     setIsLoading(true);
-    setError("");
+    setError('');
 
     try {
       await signUp.create({
@@ -32,12 +32,12 @@ export default function SignUpComponent() {
         password,
       });
       await signUp.prepareEmailAddressVerification({
-        strategy: "email_code",
+        strategy: 'email_code',
       });
       setVerifying(true);
     } catch (err) {
       //@ts-expect-error err.errors is not defined
-      setError(err.errors?.[0]?.message || "Sign up failed. Please try again.");
+      setError(err.errors?.[0]?.message || 'Sign up failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +101,7 @@ export default function SignUpComponent() {
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Create a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -123,7 +123,7 @@ export default function SignUpComponent() {
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? "Signing up..." : "Sign Up"}
+            {isLoading ? 'Signing up...' : 'Sign Up'}
           </Button>
         </form>
 
@@ -145,7 +145,7 @@ export default function SignUpComponent() {
 
         <div className="text-center space-y-2">
           <p className="text-sm text-gray-600">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link
               to="/login"
               className="text-blue-600 hover:underline font-medium"
@@ -154,11 +154,11 @@ export default function SignUpComponent() {
             </Link>
           </p>
           <p className="text-xs text-gray-500">
-            By signing up, you agree to our{" "}
+            By signing up, you agree to our{' '}
             <Link to="/terms" className="text-blue-600 hover:underline">
               Terms of Service
-            </Link>{" "}
-            and{" "}
+            </Link>{' '}
+            and{' '}
             <Link to="/privacy" className="text-blue-600 hover:underline">
               Privacy Policy
             </Link>

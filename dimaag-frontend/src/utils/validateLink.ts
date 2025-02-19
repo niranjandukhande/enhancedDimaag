@@ -1,13 +1,13 @@
 export const validateLink = (platform: string, link: string): boolean => {
   if (
-    platform === "twitter" &&
+    platform === 'twitter' &&
     /^https?:\/\/(?:www\.)?x\.com(\/|$)/i.test(link)
   ) {
     return false;
   }
 
   if (
-    platform === "youtube" &&
+    platform === 'youtube' &&
     /^https?:\/\/(?:www\.)?(youtube\.com|youtu\.be)(\/|$)/i.test(link)
   ) {
     return true;

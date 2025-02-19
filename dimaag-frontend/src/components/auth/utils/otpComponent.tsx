@@ -1,57 +1,57 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { useSignIn, useSignUp } from "@clerk/clerk-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+} from '@/components/ui/input-otp';
+import { useSignIn, useSignUp } from '@clerk/clerk-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function OtpComponent({ strategy }: { strategy: string }) {
   const { signIn, setActive: setSignInActive } = useSignIn();
   const { signUp, setActive: setSignUpActive, isLoaded } = useSignUp();
   const navigate = useNavigate();
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
+  const [otp, setOtp] = useState('');
+  const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
   const handleOtpVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsVerifying(true);
-    setError("");
+    setError('');
 
     try {
-      if (strategy === "email_code") {
+      if (strategy === 'email_code') {
         const result = await signIn!.attemptFirstFactor({
-          strategy: "email_code",
+          strategy: 'email_code',
           code: otp,
         });
-        if (result.status === "complete") {
+        if (result.status === 'complete') {
           await setSignInActive!({ session: result.createdSessionId });
-          navigate("/dashboard");
+          navigate('/dashboard');
         }
       }
-      if (strategy === "password") {
+      if (strategy === 'password') {
         if (!isLoaded) return;
         const signUpAttempt = await signUp!.attemptEmailAddressVerification({
           code: otp,
         });
-        if (signUpAttempt.status === "complete") {
+        if (signUpAttempt.status === 'complete') {
           await setSignUpActive!({ session: signUpAttempt.createdSessionId });
-          navigate("/dashboard");
+          navigate('/dashboard');
         }
       }
     } catch (err) {
-      console.error("error is", err);
+      console.error('error is', err);
       //@ts-expect-error err.errors is not defined
-      setError(err.errors?.[0]?.message || "OTP verification failed");
+      setError(err.errors?.[0]?.message || 'OTP verification failed');
     } finally {
       setIsVerifying(false);
     }
@@ -137,7 +137,7 @@ export function OtpComponent({ strategy }: { strategy: string }) {
             className="w-full"
             disabled={otp.length !== 6 || isVerifying}
           >
-            {isVerifying ? "Verifying..." : "Verify"}
+            {isVerifying ? 'Verifying...' : 'Verify'}
           </Button>
         </form>
 

@@ -1,11 +1,17 @@
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { embeddingModel, model } from '@/config/gemini';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY!);
-const model = genAI.getGenerativeModel({ model: "text-embedding-004"});
+export async function getEmbbedings(text: string) {
+  const startTime = Date.now();
 
-export async function getEmbeddings(text: string) {
-    const result = await model.embedContent(text);
-    console.log(result.embedding.values);
+  const prompt = `Summarize the following content concisely while preserving key details and important insights:
+    
+    "${text}"`;
+
+  const summaryResponse = await model.generateContent(prompt);
+  const summary = summaryResponse.response.text();
+  const result = await embeddingModel.embedContent(summary);
+
+  const endTime = Date.now();
+  console.log(`Summary generated in ${endTime - startTime} ms`);
+  return result.embedding.values;
 }
-
-

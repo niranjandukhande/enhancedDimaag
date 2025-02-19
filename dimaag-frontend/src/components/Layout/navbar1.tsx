@@ -1,6 +1,6 @@
-import { Search, User } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
+import { Search, User } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '../ui/button';
 
 const MinimalNavbar = () => {
   const location = useLocation();
@@ -33,14 +33,14 @@ const MinimalNavbar = () => {
             <Link
               to="/explore"
               className={`text-sm font-medium transition-colors duration-300 hover:text-gray-900 ${
-                location.pathname === "/explore"
-                  ? "text-gray-900"
-                  : "text-gray-600"
+                location.pathname === '/explore'
+                  ? 'text-gray-900'
+                  : 'text-gray-600'
               }`}
             >
               Explore
             </Link>
-            <Button onClick={() => navigate("/profile")}>
+            <Button onClick={() => navigate('/profile')}>
               <div className="h-8 w-8 rounded-md bg-gray-900 p-1.5 hover:bg-gray-800 transition-colors duration-300 cursor-pointer">
                 <User className="h-full w-full text-white" />
               </div>

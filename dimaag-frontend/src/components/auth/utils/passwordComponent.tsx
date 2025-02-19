@@ -1,17 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useSignIn } from "@clerk/clerk-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useSignIn } from '@clerk/clerk-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PasswordComponent({ email }: { email: string }) {
   const { isLoaded, signIn, setActive } = useSignIn();
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -20,7 +20,7 @@ export default function PasswordComponent({ email }: { email: string }) {
     if (!isLoaded) return;
 
     setIsLoading(true);
-    setError("");
+    setError('');
 
     try {
       const result = await signIn.create({
@@ -28,13 +28,13 @@ export default function PasswordComponent({ email }: { email: string }) {
         password,
       });
 
-      if (result.status === "complete") {
+      if (result.status === 'complete') {
         await setActive!({ session: result.createdSessionId });
-        navigate("/dashboard");
+        navigate('/dashboard');
       }
     } catch (err) {
       //@ts-expect-error err.errors is not defined
-      setError(err.errors?.[0]?.message || "Login failed. Please try again.");
+      setError(err.errors?.[0]?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +69,7 @@ export default function PasswordComponent({ email }: { email: string }) {
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -91,7 +91,7 @@ export default function PasswordComponent({ email }: { email: string }) {
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? "Logging in..." : "Login"}
+            {isLoading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
 

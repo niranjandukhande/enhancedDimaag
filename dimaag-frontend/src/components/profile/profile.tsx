@@ -1,12 +1,12 @@
-import { useAxiosClient } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useAxiosClient } from '@/config/axios';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Profile() {
   const api = useAxiosClient();
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["profile"],
+    queryKey: ['profile'],
     queryFn: async () => {
-      const response = await api.get("/user");
+      const response = await api.get('/user');
       console.log(response.data);
       return response.data;
     },

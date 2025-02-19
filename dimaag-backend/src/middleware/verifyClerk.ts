@@ -1,17 +1,16 @@
-import { verifyToken } from "@clerk/express";
-import { NextFunction, Request, Response } from "express";
-import clerk from "../config/clerk";
+import { verifyToken } from '@clerk/express';
+import { NextFunction, Request, Response } from 'express';
 
 export async function verifyClerkSession(
-  req: any,
+  req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    console.log("verifying clerk session");
-    const token = req.headers.authorization?.split(" ")[1];
+    console.log('verifying clerk session');
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      throw new Error("NO TOKEN PROVIDED");
+      throw new Error('NO TOKEN PROVIDED');
     }
 
     const resul1 = await verifyToken(token, {
@@ -24,6 +23,6 @@ export async function verifyClerkSession(
     next();
   } catch (error) {
     console.log(error);
-    res.status(401).json({ message: "NO TOKEN PROVIDED" });
+    res.status(401).json({ message: 'NO TOKEN PROVIDED' });
   }
 }

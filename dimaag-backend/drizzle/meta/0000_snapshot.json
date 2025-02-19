@@ -67,12 +67,8 @@
           "name": "contents_userId_users_clerkId_fk",
           "tableFrom": "contents",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "clerkId"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["clerkId"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -133,12 +129,8 @@
           "name": "permissions_contentId_contents_id_fk",
           "tableFrom": "permissions",
           "tableTo": "contents",
-          "columnsFrom": [
-            "contentId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contentId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -146,12 +138,8 @@
           "name": "permissions_owner_users_clerkId_fk",
           "tableFrom": "permissions",
           "tableTo": "users",
-          "columnsFrom": [
-            "owner"
-          ],
-          "columnsTo": [
-            "clerkId"
-          ],
+          "columnsFrom": ["owner"],
+          "columnsTo": ["clerkId"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -159,12 +147,8 @@
           "name": "permissions_sharesWith_users_clerkId_fk",
           "tableFrom": "permissions",
           "tableTo": "users",
-          "columnsFrom": [
-            "sharesWith"
-          ],
-          "columnsTo": [
-            "clerkId"
-          ],
+          "columnsFrom": ["sharesWith"],
+          "columnsTo": ["clerkId"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -238,23 +222,17 @@
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         },
         "users_clerkId_unique": {
           "name": "users_clerkId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "clerkId"
-          ]
+          "columns": ["clerkId"]
         },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},

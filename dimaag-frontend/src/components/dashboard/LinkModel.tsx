@@ -1,49 +1,49 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { useContentMutation } from "@/hooks/useContentMutation";
-import { contentSchema, contentType } from "@/types/content";
-import { validateLink } from "@/utils/validateLink";
-import { Lock, Twitter, Youtube } from "lucide-react";
-import { useState } from "react";
-import toast from "react-hot-toast";
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { useContentMutation } from '@/hooks/useContentMutation';
+import { contentSchema, contentType } from '@/types/content';
+import { validateLink } from '@/utils/validateLink';
+import { Lock, Twitter, Youtube } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 function LinkModel() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    link: "",
-    platform: "",
+    title: '',
+    description: '',
+    link: '',
+    platform: '',
     isPrivate: false,
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -70,12 +70,12 @@ function LinkModel() {
   const handleSave = async () => {
     try {
       if (!validateLink(formData.platform, formData.link)) {
-        if (formData.platform === "twitter") {
-          toast.error("we are not accepting x.com links");
+        if (formData.platform === 'twitter') {
+          toast.error('we are not accepting x.com links');
           setIsOpen(false);
           return;
         }
-        toast.error("Please select a valid platform");
+        toast.error('Please select a valid platform');
         return;
       }
 
@@ -88,12 +88,12 @@ function LinkModel() {
       };
       const reqBody = contentSchema.safeParse(contentDetails);
       if (reqBody.error) {
-        console.log("error", reqBody.error);
+        console.log('error', reqBody.error);
         throw reqBody.error;
       }
       await contentSave.mutateAsync(contentDetails);
     } catch (err) {
-      console.error("Error inserting user:", err);
+      console.error('Error inserting user:', err);
     }
 
     setIsOpen(false);
