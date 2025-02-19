@@ -3,21 +3,24 @@ import { app } from "./app";
 import { db } from "./config/database";
 import { syncWithClerk } from "./config/syncWithClerk";
 import { YoutubeLoader } from "@langchain/community/document_loaders/web/youtube";
+import { getSummary } from "./helpers/getSummary";
 const PORT = 3000;
 
 (async () => {
   try {
-    // const loader = YoutubeLoader.createFromUrl(
-    //   "https://www.youtube.com/watch?v=XJVgWssbnac",
-    //   {
-    //     language: "es",
-    //     addVideoInfo: true,
-    //   }
-    // );
+    const loader = YoutubeLoader.createFromUrl(
+      "https://youtu.be/TBxS0XhdfmU?si=2l4HXtyWQsbkfPv-",
+      {
+        language: "es",
+        addVideoInfo: true,
+      }
+    );
 
-    // const docs = await loader.load();
+    const docs = await loader.load();
+    
+    await getSummary(docs[0].pageContent)
 
-    // console.log(docs);
+    return
     // try {
     //   const response = await axios.get("https://publish.twitter.com/oembed", {
     //     params: {
