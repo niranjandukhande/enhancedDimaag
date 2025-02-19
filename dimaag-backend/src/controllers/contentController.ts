@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import { db } from "../config/database";
-import { contentTable } from "../models/contentModel";
+import { ContentInsert, contentTable } from "../models/contentModel";
 import { eq } from "drizzle-orm";
 
 export async function addContent(req: Request, res: Response) {
-  console.log("req.body", req.body);
-
   try {
-    const content = {
+    const content: ContentInsert = {
       title: req.body.title,
       typeOfContent: req.body.typeOfContent,
       link: req.body.link,
@@ -16,11 +14,8 @@ export async function addContent(req: Request, res: Response) {
       userId: req.userId,
     };
 
-    const insertedContent = await db
-      .insert(contentTable)
-      .values(content)
-      .returning();
-    console.log("Content Inserted:", insertedContent);
+    await db.insert(contentTable).values(content);
+
     res.status(200).json({
       message: "Data Inserted Successfully",
     });
@@ -39,7 +34,7 @@ export async function getContent(req: Request, res: Response) {
       .from(contentTable)
       .where(eq(contentTable.userId, req.userId))
       .execute();
-    console.log("Content", content);
+
     res.status(200).json({
       message: "Data Fetched Successfully",
       data: content,

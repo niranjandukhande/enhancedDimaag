@@ -1,44 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { useAxiosClient } from "@/config/axios";
 import { SignOutButton, useUser } from "@clerk/clerk-react";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+
+import { useContent } from "@/hooks/useContent";
 import LinkModel from "./LinkModel";
 
 function Dashboard() {
   const { user } = useUser();
-  const api = useAxiosClient();
-  const [content, setContent] = useState([]);
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["content"],
-    queryFn: async () => {
-      const response = await api.get("/content");
-      return response.data;
-    },
-    gcTime: 24 * 60 * 60 * 1000,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
-  useEffect(() => {
-    if (isError) {
-      toast.loading("Loading content...");
-    }
-  }, [isError]);
-  useEffect(() => {
-    let toastId: any;
-    if (isLoading) {
-      toastId = toast.loading("Loading content...");
-    }
-    return () => {
-      if (toastId) {
-        toast.dismiss(toastId);
-      }
-    };
-  }, [isLoading]);
 
+  const [content, setContent] = useState([]);
+  const { data } = useContent();
   useEffect(() => {
     if (data) {
       setContent(data);
@@ -57,9 +28,7 @@ function Dashboard() {
         <SignOutButton>
           <Button variant="outline">Sign Out</Button>
         </SignOutButton>
-        <Button asChild variant="outline">
-          <Link to="/signin">Sign In</Link>
-        </Button>
+
         <LinkModel />
       </div>
     </div>

@@ -24,15 +24,16 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useAxiosClient } from "@/config/axios";
+import { useContentMutation } from "@/hooks/useContentMutation";
 import { contentSchema, contentType } from "@/types/content";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Instagram, Lock, Twitter, Youtube } from "lucide-react";
+import { validateLink } from "@/utils/validateLink";
+import { Lock, Twitter, Youtube } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 function LinkModel() {
   const [isOpen, setIsOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -64,30 +65,20 @@ function LinkModel() {
       platform: value,
     }));
   };
-  const api = useAxiosClient();
-  const queryClient = useQueryClient();
-  const contentSave = useMutation({
-    mutationFn: async (contentDetails: contentType) => {
-      const response = await api.post("/content", contentDetails);
-      return response.data;
-    },
-    onSuccess: (data) => {
-      console.log("data", data);
-      toast.success("Content added successfully");
-    },
-    onError: (error) => {
-      toast.error("Error adding content");
-      console.log("error", error);
-    },
-    onSettled: () => {
-      console.log("onSettled");
-      queryClient.invalidateQueries({
-        queryKey: ["content"],
-      });
-    },
-  });
+
+  const contentSave = useContentMutation();
   const handleSave = async () => {
     try {
+      if (!validateLink(formData.platform, formData.link)) {
+        if (formData.platform === "twitter") {
+          toast.error("we are not accepting x.com links");
+          setIsOpen(false);
+          return;
+        }
+        toast.error("Please select a valid platform");
+        return;
+      }
+
       const contentDetails: contentType = {
         title: formData.title,
         typeOfContent: formData.platform,
@@ -171,12 +162,6 @@ function LinkModel() {
                       <div className="flex items-center">
                         <Twitter className="mr-2" size={16} />
                         Twitter
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="instagram">
-                      <div className="flex items-center">
-                        <Instagram className="mr-2" size={16} />
-                        Instagram
                       </div>
                     </SelectItem>
                   </SelectContent>
