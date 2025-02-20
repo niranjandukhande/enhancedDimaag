@@ -4,20 +4,20 @@ import { useEffect, useState } from 'react';
 
 import { useContent } from '@/hooks/useContent';
 import LinkModel from './LinkModel';
-import { MinimalistContentGallery } from './contentGallery';
+import ContentDisplay from './contentDisplay';
 
 function Dashboard() {
   const { user } = useUser();
-
   const [content, setContent] = useState([]);
-  const { data ,isLoading} = useContent();
+  const { data } = useContent();
   useEffect(() => {
     if (data) {
-      console.log("data", data);
+      console.log('data', data);
       setContent(data);
     }
   }, [data]);
-  console.log('content', content);
+  console.log('content', content.data);
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
@@ -26,13 +26,14 @@ function Dashboard() {
           <p>Email: {user.emailAddresses[0].emailAddress}</p>
         )}
       </div>
-    {/* { !isLoading && <MinimalistContentGallery contentDataArray={content} />} */}
- <div className="flex space-x-4 mb-4">
+      <div className="flex space-x-4 mb-4">
         <SignOutButton>
           <Button variant="outline">Sign Out</Button>
         </SignOutButton>
 
         <LinkModel />
+
+        {content.data && <ContentDisplay contentData={content.data} />}
       </div>
     </div>
   );
