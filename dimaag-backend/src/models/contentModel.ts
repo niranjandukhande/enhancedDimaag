@@ -5,6 +5,7 @@ import {
   timestamp,
   uuid,
   varchar,
+  vector,
 } from 'drizzle-orm/pg-core';
 import { usersTable } from '@/models/userModel';
 import { createInsertSchema } from 'drizzle-zod';
@@ -26,11 +27,17 @@ export const contentTable = pgTable('contents', {
       onDelete: 'cascade',
       onUpdate: 'cascade',
     }),
+  summary: text(),
+  embeddings: vector({
+    dimensions: 768,
+  }),
 });
 const insertSchema = createInsertSchema(contentTable, {
   createdAt: (schema) => schema.optional(),
   id: (schema) => schema.optional(),
   updatedAt: (schema) => schema.optional(),
+  summary: (schema) => schema.optional(),
+  embeddings: (schema) => schema.optional(),
 });
 
 export type ContentInsert = z.infer<typeof insertSchema>;

@@ -13,5 +13,12 @@ export async function getEmbbedings(text: string) {
 
   const endTime = Date.now();
   console.log(`Summary generated in ${endTime - startTime} ms`);
+  return { embeddings: result.embedding.values, summary };
+}
+export async function getEmbedding(text: string) {
+  const start = Date.now();
+  const result = await embeddingModel.embedContent(text);
+  const end = Date.now();
+  console.log('embedding time taken', end - start);
   return result.embedding.values;
 }

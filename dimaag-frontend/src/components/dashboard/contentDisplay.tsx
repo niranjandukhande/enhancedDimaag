@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play } from 'lucide-react';
+import { Pencil, Play, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -8,24 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { contentType } from '@/types/content';
+import { useAxiosClient } from '@/config/axios';
+import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Define the content item type
-interface ContentItem {
-  id: string;
-  isPublic: boolean;
-  title: string;
-  description: string;
-  link: string;
-  typeOfContent: string;
-  createdAt: string;
-  summary?: string;
-}
+// interface ContentItem {
+//   id: string;
+//   isPublic: boolean;
+//   title: string;
+//   description: string;
+//   link: string;
+//   typeOfContent: string;
+//   createdAt: string;
+//   summary?: string;
+// }
 
-interface ContentDisplayProps {
-  contentData: ContentItem[];
-}
+// interface ContentDisplayProps {
+//   contentData: ContentItem[];
+// }
 
-const ContentDisplay: React.FC<ContentDisplayProps> = ({ contentData }) => {
+const ContentDisplay: React.FC<contentType> = ({ contentData }) => {
   const [previewModal, setPreviewModal] = useState({
     isOpen: false,
     videoUrl: '',
@@ -40,8 +44,23 @@ const ContentDisplay: React.FC<ContentDisplayProps> = ({ contentData }) => {
       title: title,
     });
   };
-
-  // Close the modal
+const api=useAxiosClient();
+const queryClient = useQueryClient(); 
+async function handleDelete(id:string){
+  try {
+   
+  const res=await api.delete(`/content/${id}`);
+  if(res.status===200){
+    toast.success('Content deleted successfully');
+  } 
+  } catch (error) {
+   toast.error('Error deleting content');
+  }finally{
+    queryClient.invalidateQueries({
+      queryKey: ['content'],
+    });
+  }
+}
   const handleCloseModal = () => {
     setPreviewModal({
       ...previewModal,
@@ -61,51 +80,70 @@ const ContentDisplay: React.FC<ContentDisplayProps> = ({ contentData }) => {
     <>
       {/* Content Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {contentData.map((item, index) => (
-          <div
-            key={item.id}
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            {/* Content Card */}
-            <div className="group relative bg-card-soft hover:bg-card-hover rounded-xl p-6 transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-xl shadow-lg">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium px-3 py-1 bg-black/5 rounded-full">
-                    {item.typeOfContent}
+      {contentData.map((item, index) => (
+        <div
+          key={item.id}
+          className="animate-fade-in"
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+          {/* Content Card */}
+          <div className="group relative bg-card-soft hover:bg-card-hover rounded-xl p-6 transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-xl shadow-lg">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium px-3 py-1 bg-black/5 rounded-full">
+                  {item.typeOfContent}
+                </span>
+                <div className="absolute top-3 right-3 z-10 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+                  <span className="text-xs font-medium text-gray-700">
+                    {item.isPublic ? 'Public' : 'Private'}
                   </span>
-                  <div className="absolute top-3 right-3 z-10 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
-                    <span className="text-xs font-medium text-gray-700">
-                      {item.isPublic ? 'Public' : 'Private'}
-                    </span>
-                    <Switch checked={item.isPublic} />
-                  </div>
+                  <Switch checked={item.isPublic} />
                 </div>
-                <h3 className="text-xl font-semibold leading-tight group-hover:text-gray-900 transition-colors duration-300">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {item.description}
+              </div>
+              <h3 className="text-xl font-semibold leading-tight group-hover:text-gray-900 transition-colors duration-300">
+                {item.title}
+              </h3>
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {item.description}
+              </p>
+              {item.summary && (
+                <p className="text-sm text-gray-500 italic line-clamp-2">
+                  "{item.summary}"
                 </p>
-                {item.summary && (
-                  <p className="text-sm text-gray-500 italic line-clamp-2">
-                    "{item.summary}"
-                  </p>
-                )}
+              )}
+              {/* Button Container */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
                 <Button
                   onClick={() => handlePreviewClick(item.link, item.title)}
-                  className="w-full mt-4 bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                  className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
                 >
                   <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
                   <Play className="w-4 h-4 mr-2" />
-                  Preview Video
+                  Preview
+                </Button>
+                <Button
+                  onClick={() => handlePreviewClick(item.link, item.title)}
+                  className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                >
+                  <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+                <Button
+                  onClick={()=>handleDelete(item.id)}
+                  className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                >
+                  <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
                 </Button>
               </div>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
 
       {/* Video Preview Modal */}
       <Dialog open={previewModal.isOpen} onOpenChange={handleCloseModal}>

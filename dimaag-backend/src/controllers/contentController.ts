@@ -2,10 +2,11 @@ import { db } from '@/config/database';
 
 import { isValidLink } from '@/helpers/isvalidLink';
 import { YoutubeLoader } from '@langchain/community/document_loaders/web/youtube';
-import { eq } from 'drizzle-orm';
+import { and, cosineDistance, eq, sql, gt } from 'drizzle-orm';
 import { Request, Response } from 'express';
-import { ContentInsert, contentTable } from '../models/contentModel';
-import { getEmbbedings } from '@/helpers/getEmbeddings';
+import { ContentInsert, contentTable } from '@/models/contentModel';
+import { getEmbbedings, getEmbedding } from '@/helpers/getEmbeddings';
+import { embeddingModel } from '@/config/gemini';
 
 export async function addContent(req: Request, res: Response): Promise<void> {
   try {
@@ -39,11 +40,12 @@ export async function addContent(req: Request, res: Response): Promise<void> {
 
     const docs = await loader.load();
 
-    const embbedings = await getEmbbedings(docs[0].pageContent);
+    const { embeddings, summary } = await getEmbbedings(docs[0].pageContent);
     await db
       .update(contentTable)
       .set({
-        title: content.title,
+        embeddings: embeddings,
+        summary: summary,
       })
       .where(eq(contentTable.id, insertedRow[0].id));
   } catch (err) {
@@ -63,7 +65,6 @@ export async function getContent(req: Request, res: Response) {
       .execute();
 
     res.status(200).json({
-      message: 'Data Fetched Successfully',
       data: content,
     });
   } catch (err) {
@@ -73,4 +74,49 @@ export async function getContent(req: Request, res: Response) {
       error: err,
     });
   }
+}
+export async function deleteContent(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    await db
+      .delete(contentTable)
+      .where(and(eq(contentTable.id, id), eq(contentTable.userId, userId)));
+    res.status(200).json({
+      message: 'Content deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting content:', error);
+    res.status(500).json({
+      message: 'Error deleting content',
+      error: error,
+    });
+  }
+}
+export async function searchContent(query: string, userId: string) {
+  const start = Date.now();
+  const queryEmbedding = await getEmbedding(query);
+  const content = await db
+    .select()
+    .from(contentTable)
+    .where(eq(contentTable.userId, userId))
+    .execute();
+
+  const similarities = sql<number>` 1 -(${cosineDistance(contentTable.embeddings, queryEmbedding)})`;
+
+  const similarContent = await db
+    .select()
+    .from(contentTable)
+    .where(and(gt(similarities, 0.5), eq(contentTable.userId, userId)))
+    .execute();
+  const end = Date.now();
+  console.log(
+    'similarContent..............',
+    similarContent,
+    'time taken',
+    end - start,
+  );
 }
