@@ -1,8 +1,19 @@
 import { Search, User } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
+import { useState } from 'react';
+import { useAxiosClient } from '@/config/axios';
 
 const MinimalNavbar = () => {
+  const [input, setInput] = useState('');
+  const api = useAxiosClient();
+
+  const handleClick = async () => {
+    if (input === '') return;
+    const response = await api.post('/content/search', { query: input });
+    console.log('Response from search query is : ', response.data);
+  };
+
   const location = useLocation();
   const navigate = useNavigate();
   return (
@@ -16,17 +27,22 @@ const MinimalNavbar = () => {
             <span className="text-xl font-bold text-gray-900">Company</span>
           </Link>
 
-          <div className="flex-1 max-w-lg mx-8">
+          <div className="flex max-w-lg mx-8">
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
               <input
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                }}
                 type="text"
                 className="block w-full pl-10 pr-3 py-2 border-b-2 border-gray-200 focus:border-gray-900 bg-transparent transition-all duration-300 outline-none placeholder:text-gray-400"
                 placeholder="Search..."
               />
             </div>
+            <Button onClick={handleClick}>GO</Button>
           </div>
 
           <div className="flex items-center space-x-8">

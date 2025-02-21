@@ -2,23 +2,14 @@ import { Button } from '@/components/ui/button';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
 
-import { useContent } from '@/hooks/useContent';
 import LinkModel from '@/components/dashboard/LinkModel';
+import { useContentStore } from '@/stores/content';
 import ContentDisplay from './contentDisplay';
-import { Input } from '../ui/input';
+import { useContent } from '@/hooks/useContent';
 
 function Dashboard() {
   const { user } = useUser();
-  const [content, setContent] = useState([]);
-  const { data } = useContent();
-  useEffect(() => {
-    if (data) {
-      console.log('data', data);
-      setContent(data);
-    }
-  }, [data]);
-  console.log('content', content.data);
-const [search,setSearch]=useState("")
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
@@ -33,15 +24,7 @@ const [search,setSearch]=useState("")
         </SignOutButton>
 
         <LinkModel />
-<div>
-  <Input 
-  value={search}
-  onChange={(e)=>setSearch(e.target.value)}
-  placeholder="Search for content"
-  />
-  <Button onClick={()=>console.log(search)}>Search</Button>
-</div>
-        {content.data && <ContentDisplay contentData={content.data} />}
+        <ContentDisplay />
       </div>
     </div>
   );

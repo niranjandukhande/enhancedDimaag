@@ -1,9 +1,11 @@
 import { useAxiosClient } from '@/config/axios';
+import { useContentStore } from '@/stores/content';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 export const useContent = () => {
+  const { setContents } = useContentStore();
   const api = useAxiosClient();
 
   const { data, isLoading, isError } = useQuery({
@@ -28,5 +30,9 @@ export const useContent = () => {
     return () => toast.dismiss(toastId || '');
   }, [isLoading]);
 
-  return { data, isLoading, isError };
+  useEffect(() => {
+    if (data) {
+      setContents(data);
+    }
+  }, [data, setContents]);
 };

@@ -96,10 +96,14 @@ export async function deleteContent(
     });
   }
 }
-export async function searchContent(query: string, userId: string) {
-  const start = Date.now();
+export async function searchContent(req:Request,res:Response) {
+  const userId = req.userId
+  const {query} = req.body
   const queryEmbedding = await getEmbedding(query);
-  const content = await db
+
+  try {
+  const start = Date.now();
+    const content = await db
     .select()
     .from(contentTable)
     .where(eq(contentTable.userId, userId))
@@ -113,10 +117,14 @@ export async function searchContent(query: string, userId: string) {
     .where(and(gt(similarities, 0.5), eq(contentTable.userId, userId)))
     .execute();
   const end = Date.now();
-  console.log(
-    'similarContent..............',
-    similarContent,
-    'time taken',
-    end - start,
-  );
+
+  console.log(`time taken to search content:`,end - start)
+  res.status(200).json(similarContent)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({
+      message: "Internal server error",
+      error: error
+    })
+  }
 }
