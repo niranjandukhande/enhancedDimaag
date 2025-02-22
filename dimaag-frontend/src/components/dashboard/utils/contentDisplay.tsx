@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Pencil, Play, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import EditModal from './EditModal';
 
 const ContentDisplay = () => {
   const { contents } = useContentStore();
@@ -116,7 +117,7 @@ const ContentDisplay = () => {
                       Preview
                     </Button>
                     <Button
-                      onClick={() => handlePreviewClick(item.link, item.title)}
+                      onClick={() => <EditModal />}
                       className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
                     >
                       <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />

@@ -1,8 +1,9 @@
 import { db } from '@/config/database';
 import { isVerifiedWithClerk } from '@/helpers/isVerifiedWithClerk';
 import { contentTable } from '@/models/contentModel';
-import { permissionTable } from '@/models/permissionModel';
+import { PermissionInsert, permissionTable } from '@/models/permissionModel';
 import { usersTable } from '@/models/userModel';
+import { error } from 'console';
 import { and, eq, inArray } from 'drizzle-orm';
 import { Request, Response } from 'express';
 
@@ -63,5 +64,31 @@ export async function getContentWithPermission(req: Request, res: Response) {
     }
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+export async function addPermission(req: Request, res: Response) {
+  try {
+    const userId = req.userId;
+    const { contentId, sharesWith } = req.body;
+
+    if (!contentId || !sharesWith)
+      throw error('missing contentid or shareswith');
+
+    const data: PermissionInsert = {
+      contentId: contentId,
+      sharesWith: sharesWith,
+      owner: userId,
+    };
+    await db.insert(permissionTable).values(data);
+    res.status(200).json({
+      message: 'permission updated successfully',
+    });
+  } catch (error) {
+    console.log('error while setting permissions', error);
+    res.status(500).json({
+      message: 'error while inserting',
+      error: error,
+    });
   }
 }

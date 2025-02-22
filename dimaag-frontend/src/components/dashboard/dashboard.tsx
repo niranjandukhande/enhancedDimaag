@@ -1,5 +1,5 @@
 import LinkModel from '@/components/dashboard/LinkModel';
-import ContentDisplay from './contentDisplay';
+import ContentDisplay from '@/components/dashboard/utils/contentDisplay';
 
 function Dashboard() {
   return (

@@ -1,6 +1,8 @@
 import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { usersTable } from '@/models/userModel';
 import { contentTable } from '@/models/contentModel';
+import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 export const permissionTable = pgTable('permissions', {
   id: uuid().primaryKey().defaultRandom(),
@@ -24,3 +26,11 @@ export const permissionTable = pgTable('permissions', {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+const insertSchema = createInsertSchema(permissionTable, {
+  createdAt: (schema) => schema.optional(),
+  id: (schema) => schema.optional(),
+  updatedAt: (schema) => schema.optional(),
+});
+
+export type PermissionInsert = z.infer<typeof insertSchema>;
