@@ -8,7 +8,7 @@ import {
   vector,
 } from 'drizzle-orm/pg-core';
 import { usersTable } from '@/models/userModel';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 export const contentTable = pgTable('contents', {
   id: uuid().primaryKey().defaultRandom(),
@@ -39,5 +39,8 @@ const insertSchema = createInsertSchema(contentTable, {
   summary: (schema) => schema.optional(),
   embeddings: (schema) => schema.optional(),
 });
-
+const selectSchema = createSelectSchema(contentTable, {
+  embeddings: (schema) => schema.optional(),
+});
+export type ContentSelect = z.infer<typeof selectSchema>;
 export type ContentInsert = z.infer<typeof insertSchema>;

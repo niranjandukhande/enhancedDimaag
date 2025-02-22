@@ -1,43 +1,31 @@
-import React, { useState } from 'react';
-import { Pencil, Play, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { contentType } from '@/types/content';
+import { Switch } from '@/components/ui/switch';
 import { useAxiosClient } from '@/config/axios';
-import toast from 'react-hot-toast';
-import { useQueryClient } from '@tanstack/react-query';
 import { useContent } from '@/hooks/useContent';
 import { useContentStore } from '@/stores/content';
-
-// Define the content item type
-// interface ContentItem {
-//   id: string;
-//   isPublic: boolean;
-//   title: string;
-//   description: string;
-//   link: string;
-//   typeOfContent: string;
-//   createdAt: string;
-//   summary?: string;
-// }
-
-// interface ContentDisplayProps {
-//   contentData: ContentItem[];
-// }
+import { contentType } from '@/types/content';
+import { useQueryClient } from '@tanstack/react-query';
+import { Pencil, Play, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const ContentDisplay = () => {
-  const { getContents } = useContentStore();
+  const { contents } = useContentStore();
+  const [content, setContent] = useState<contentType[]>([]);
+
   useContent();
 
-  const data = getContents();
-  console.log('data inside getContents', data);
-  const contentData = data.data;
+  useEffect(() => {
+    if (contents) {
+      setContent(contents);
+    }
+  }, [contents]);
 
   const [previewModal, setPreviewModal] = useState({
     isOpen: false,
@@ -45,7 +33,6 @@ const ContentDisplay = () => {
     title: '',
   });
 
-  // Handle preview click
   const handlePreviewClick = (link: string, title: string) => {
     setPreviewModal({
       isOpen: true,
@@ -53,8 +40,10 @@ const ContentDisplay = () => {
       title: title,
     });
   };
+
   const api = useAxiosClient();
   const queryClient = useQueryClient();
+
   async function handleDelete(id: string) {
     try {
       const res = await api.delete(`/content/${id}`);
@@ -69,6 +58,7 @@ const ContentDisplay = () => {
       });
     }
   }
+
   const handleCloseModal = () => {
     setPreviewModal({
       ...previewModal,
@@ -76,7 +66,6 @@ const ContentDisplay = () => {
     });
   };
 
-  // Extract YouTube video ID
   const getYouTubeVideoId = (url: string) => {
     const regExp =
       /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -86,16 +75,14 @@ const ContentDisplay = () => {
 
   return (
     <>
-      {/* Content Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {contentData &&
-          contentData.map((item, index) => (
+        {content &&
+          content.map((item, index) => (
             <div
               key={item.id}
               className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              {/* Content Card */}
               <div className="group relative bg-card-soft hover:bg-card-hover rounded-xl p-6 transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-xl shadow-lg">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="space-y-4">
@@ -116,12 +103,9 @@ const ContentDisplay = () => {
                   <p className="text-sm text-gray-600 line-clamp-2">
                     {item.description}
                   </p>
-                  {item.summary && (
-                    <p className="text-sm text-gray-500 italic line-clamp-2">
-                      "{item.summary}"
-                    </p>
-                  )}
-                  {/* Button Container */}
+
+                  {item.summary}
+
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
                     <Button
                       onClick={() => handlePreviewClick(item.link, item.title)}
@@ -140,7 +124,7 @@ const ContentDisplay = () => {
                       Edit
                     </Button>
                     <Button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item.id!)}
                       className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
                     >
                       <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
@@ -154,7 +138,6 @@ const ContentDisplay = () => {
           ))}
       </div>
 
-      {/* Video Preview Modal */}
       <Dialog open={previewModal.isOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="sm:max-w-[900px] p-0">
           <DialogHeader className="p-6">
@@ -164,7 +147,9 @@ const ContentDisplay = () => {
             {previewModal.videoUrl && (
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${getYouTubeVideoId(previewModal.videoUrl)}?autoplay=1`}
+                src={`https://www.youtube.com/embed/${getYouTubeVideoId(
+                  previewModal.videoUrl,
+                )}?autoplay=1`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />

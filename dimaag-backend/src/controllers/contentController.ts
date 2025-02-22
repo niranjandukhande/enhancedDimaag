@@ -56,10 +56,13 @@ export async function addContent(req: Request, res: Response): Promise<void> {
     });
   }
 }
+
 export async function getContent(req: Request, res: Response) {
   try {
+    const { embeddings, ...columnsToSelect } = contentTable;
     const content = await db
-      .select()
+      //@ts-ignore
+      .select(columnsToSelect)
       .from(contentTable)
       .where(eq(contentTable.userId, req.userId))
       .execute();
@@ -96,35 +99,29 @@ export async function deleteContent(
     });
   }
 }
-export async function searchContent(req:Request,res:Response) {
-  const userId = req.userId
-  const {query} = req.body
+export async function searchContent(req: Request, res: Response) {
+  const userId = req.userId;
+  const { query } = req.body;
+  const start = Date.now();
   const queryEmbedding = await getEmbedding(query);
 
   try {
-  const start = Date.now();
-    const content = await db
-    .select()
-    .from(contentTable)
-    .where(eq(contentTable.userId, userId))
-    .execute();
+    const similarities = sql<number>` 1 -(${cosineDistance(contentTable.embeddings, queryEmbedding)})`;
 
-  const similarities = sql<number>` 1 -(${cosineDistance(contentTable.embeddings, queryEmbedding)})`;
+    const similarContent = await db
+      .select()
+      .from(contentTable)
+      .where(and(gt(similarities, 0.5), eq(contentTable.userId, userId)))
+      .execute();
+    const end = Date.now();
 
-  const similarContent = await db
-    .select()
-    .from(contentTable)
-    .where(and(gt(similarities, 0.5), eq(contentTable.userId, userId)))
-    .execute();
-  const end = Date.now();
-
-  console.log(`time taken to search content:`,end - start)
-  res.status(200).json(similarContent)
+    console.log(`time taken to search content:`, end - start);
+    res.status(200).json(similarContent);
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({
-      message: "Internal server error",
-      error: error
-    })
+      message: 'Internal server error',
+      error: error,
+    });
   }
 }

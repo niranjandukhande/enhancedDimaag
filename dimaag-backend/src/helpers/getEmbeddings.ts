@@ -19,6 +19,6 @@ export async function getEmbedding(text: string) {
   const start = Date.now();
   const result = await embeddingModel.embedContent(text);
   const end = Date.now();
-  console.log('embedding time taken', end - start);
+
   return result.embedding.values;
 }

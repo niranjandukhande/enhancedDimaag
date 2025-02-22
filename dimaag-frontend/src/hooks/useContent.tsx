@@ -18,6 +18,7 @@ export const useContent = () => {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const useContent = () => {
 
   useEffect(() => {
     if (data) {
-      setContents(data);
+      setContents(data.data);
     }
   }, [data, setContents]);
 };

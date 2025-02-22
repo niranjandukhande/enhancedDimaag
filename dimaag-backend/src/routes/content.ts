@@ -12,5 +12,5 @@ const router = express.Router();
 router.post('/', verifyClerkSession, addContent);
 router.get('/', verifyClerkSession, getContent);
 router.delete('/:id', verifyClerkSession, deleteContent);
-router.post('/search',verifyClerkSession,searchContent)
+router.post('/search', verifyClerkSession, searchContent);
 export default router;

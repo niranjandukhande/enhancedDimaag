@@ -1,7 +1,7 @@
-import { contentType } from "./content";
+import { contentType } from './content';
 
 export interface contentStore {
-    contents : contentType[] | null;
-    getContents: ()=> contentType[] | null;
-    setContents: (content: contentType[])=> void;
+  contents: contentType[] | null;
+
+  setContents: (content: contentType[]) => void;
 }

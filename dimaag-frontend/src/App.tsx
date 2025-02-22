@@ -5,7 +5,7 @@ import Dashboard from '@/components/dashboard/dashboard';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Explore from './components/explore/explore';
 import Home from './components/home';
-import MinimalNavbar from './components/Layout/navbar1';
+import MinimalNavbar from './components/Layout/MinimalNavbar';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
@@ -42,6 +42,7 @@ export default function App() {
           />
           <Route path="/profile" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/explore/:username" element={<Explore />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />
         </Routes>

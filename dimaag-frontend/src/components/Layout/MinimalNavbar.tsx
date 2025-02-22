@@ -3,15 +3,18 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { useAxiosClient } from '@/config/axios';
+import { Input } from '../ui/input';
+import { useContentStore } from '@/stores/content';
 
 const MinimalNavbar = () => {
   const [input, setInput] = useState('');
   const api = useAxiosClient();
-
+  const { setContents } = useContentStore();
   const handleClick = async () => {
     if (input === '') return;
     const response = await api.post('/content/search', { query: input });
     console.log('Response from search query is : ', response.data);
+    setContents(response.data);
   };
 
   const location = useLocation();
@@ -32,7 +35,7 @@ const MinimalNavbar = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
-              <input
+              <Input
                 value={input}
                 onChange={(e) => {
                   setInput(e.target.value);
