@@ -1,12 +1,11 @@
 import { db } from '@/config/database';
 
-import { isValidLink } from '@/helpers/isvalidLink';
-import { YoutubeLoader } from '@langchain/community/document_loaders/web/youtube';
-import { and, cosineDistance, eq, sql, gt } from 'drizzle-orm';
-import { Request, Response } from 'express';
-import { ContentInsert, contentTable } from '@/models/contentModel';
 import { getEmbbedings, getEmbedding } from '@/helpers/getEmbeddings';
-import { embeddingModel } from '@/config/gemini';
+import { isValidLink } from '@/helpers/isvalidLink';
+import { ContentInsert, contentTable } from '@/models/contentModel';
+import { YoutubeLoader } from '@langchain/community/document_loaders/web/youtube';
+import { and, cosineDistance, eq, gt, sql } from 'drizzle-orm';
+import { Request, Response } from 'express';
 
 export async function addContent(req: Request, res: Response): Promise<void> {
   try {

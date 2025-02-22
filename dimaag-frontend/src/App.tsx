@@ -9,6 +9,7 @@ import MinimalNavbar from './components/Layout/MinimalNavbar';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
+import Brain from './components/explore/brain';
 
 export default function App() {
   return (
@@ -42,7 +43,7 @@ export default function App() {
           />
           <Route path="/profile" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/explore/:username" element={<Explore />} />
+          <Route path="/explore/:username" element={<Brain />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />
         </Routes>

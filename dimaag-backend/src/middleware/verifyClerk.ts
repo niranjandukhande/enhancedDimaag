@@ -1,3 +1,4 @@
+import { isVerifiedWithClerk } from '@/helpers/isVerifiedWithClerk';
 import { verifyToken } from '@clerk/express';
 import { NextFunction, Request, Response } from 'express';
 
@@ -13,13 +14,14 @@ export async function verifyClerkSession(
       throw new Error('NO TOKEN PROVIDED');
     }
 
-    const resul1 = await verifyToken(token, {
-      jwtKey: process.env.CLERK_JWT_KEY,
+    const isAuthenticated = await isVerifiedWithClerk(token);
+    if (isAuthenticated) {
+      req.userId = isAuthenticated.sub;
+      req.sessionId = isAuthenticated.sid;
+    } else {
+      res.status(401).json({ message: 'INVALID TOKEN' });
+    }
 
-      authorizedParties: [process.env.ALLOWED_ORIGINS!],
-    });
-    req.userId = resul1.sub;
-    req.sessionId = resul1.sid;
     next();
   } catch (error) {
     console.log(error);

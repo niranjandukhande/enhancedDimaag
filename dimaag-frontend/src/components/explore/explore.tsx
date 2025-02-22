@@ -4,6 +4,7 @@ import { formatDate } from '@/utils/formatDate';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UserCardsDisplay = () => {
   const [users, setUsers] = useState<userType[]>([]);
@@ -16,12 +17,15 @@ const UserCardsDisplay = () => {
       setUsers(data.data);
     })();
   }, []);
-
+  const navigate = useNavigate();
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {users.map((user, index) => (
-          <motion.div
+          <motion.button
+            onClick={() => {
+              navigate(`/explore/${user.username}`);
+            }}
             key={user.username}
             className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 hover:from-blue-100 hover:to-purple-100 transition-all duration-300 group"
             initial={{ opacity: 0, x: -20 }}
@@ -47,11 +51,11 @@ const UserCardsDisplay = () => {
                   <span>{user.email}</span>
                 </div>
               </div>
-              <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                 <ArrowRight className="text-blue-500" />
-              </button>
+              </div>
             </div>
-          </motion.div>
+          </motion.button>
         ))}
       </div>
     </div>
