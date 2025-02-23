@@ -10,6 +10,8 @@ import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
 import Brain from './components/explore/brain';
+import Detail from './components/dashboard/detail';
+import ContentDetail from './components/dashboard/detail';
 
 export default function App() {
   return (
@@ -43,6 +45,7 @@ export default function App() {
           />
           <Route path="/profile" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/dashboard/:id" element={<ContentDetail />} />
           <Route path="/explore/:username" element={<Brain />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />

@@ -1,4 +1,4 @@
-import LinkModel from '@/components/dashboard/LinkModel';
+import LinkModel from '@/components/dashboard/utils/LinkModel';
 import ContentDisplay from '@/components/dashboard/utils/contentDisplay';
 
 function Dashboard() {
