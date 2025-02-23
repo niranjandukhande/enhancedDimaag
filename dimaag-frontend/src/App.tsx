@@ -10,8 +10,7 @@ import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
 import Brain from './components/explore/brain';
-import Detail from './components/dashboard/detail';
-import ContentDetail from './components/dashboard/detail';
+import ContentDetail from './components/dashboard/ContentDetail';
 
 export default function App() {
   return (

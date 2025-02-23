@@ -14,10 +14,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Play, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const ContentDisplay = () => {
   const { contents } = useContentStore();
   const [content, setContent] = useState<contentType[]>([]);
+
+  const navigate = useNavigate();
 
   useContent();
 
@@ -79,6 +82,7 @@ const ContentDisplay = () => {
         {content &&
           content.map((item, index) => (
             <div
+              onClick={() => navigate(`/dashboard/${item.id}`)}
               key={item.id}
               className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}

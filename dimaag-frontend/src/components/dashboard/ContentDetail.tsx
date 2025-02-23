@@ -1,62 +1,68 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, Share2, Users } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarTrigger,
-  SidebarProvider,
   SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { useContentStore } from '@/stores/content';
+import { useUserStore } from '@/stores/userStore';
+import { contentType } from '@/types/content';
+import { userType } from '@/types/userType';
+import { useUser } from '@clerk/clerk-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Search, Share2, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 // Mock data
-const mockUsers = [
-  {
-    id: 1,
-    name: 'Alice Cooper',
-    email: 'alice@example.com',
-    avatar: '/placeholder.svg',
-  },
-  {
-    id: 2,
-    name: 'Bob Wilson',
-    email: 'bob@example.com',
-    avatar: '/placeholder.svg',
-  },
-  {
-    id: 3,
-    name: 'Carol Smith',
-    email: 'carol@example.com',
-    avatar: '/placeholder.svg',
-  },
-  {
-    id: 4,
-    name: 'David Brown',
-    email: 'david@example.com',
-    avatar: '/placeholder.svg',
-  },
-  {
-    id: 5,
-    name: 'Eve Johnson',
-    email: 'eve@example.com',
-    avatar: '/placeholder.svg',
-  },
-];
+// const mockUsers = [
+//   {
+//     id: 1,
+//     name: 'Alice Cooper',
+//     email: 'alice@example.com',
+//     avatar: '/placeholder.svg',
+//   },
+//   {
+//     id: 2,
+//     name: 'Bob Wilson',
+//     email: 'bob@example.com',
+//     avatar: '/placeholder.svg',
+//   },
+//   {
+//     id: 3,
+//     name: 'Carol Smith',
+//     email: 'carol@example.com',
+//     avatar: '/placeholder.svg',
+//   },
+//   {
+//     id: 4,
+//     name: 'David Brown',
+//     email: 'david@example.com',
+//     avatar: '/placeholder.svg',
+//   },
+//   {
+//     id: 5,
+//     name: 'Eve Johnson',
+//     email: 'eve@example.com',
+//     avatar: '/placeholder.svg',
+//   },
+// ];
 
 const sharedWith = [
   {
@@ -70,21 +76,80 @@ const sharedWith = [
 export default function ContentDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [content, setContent] = useState({
-    id: '1',
-    title: 'Advanced React Patterns',
-    typeOfContent: 'Tutorial',
-    description:
-      'Learn advanced React patterns and best practices with detailed examples and real-world use cases. This comprehensive guide covers everything from basic patterns to advanced implementations.',
-    isPublic: false,
-    link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    summary:
-      'This tutorial covers:\n- Higher Order Components\n- Render Props Pattern\n- Custom Hooks Pattern\n- Compound Components\n- State Reducer Pattern\n- Controlled vs Uncontrolled Components\n\nPerfect for intermediate to advanced React developers looking to level up their component architecture skills.',
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [allUsers, setAllUsers] = useState<userType[]>([]);
+  const { users } = useUserStore();
+
+  useUser();
+
+  useEffect(() => {
+    if (!users) return;
+    setAllUsers(users);
+  }, [users]);
+
+  console.log('users at content page are : ', allUsers);
+
+  const mockUsers = allUsers.map((user) => ({
+    id: user.id, // Keeping the API's ID
+    name: user.username, // Using username as the name
+    email: user.email, // Generating an email
+    avatar: user.imageUrl, // Keeping the same placeholder avatar
+  }));
+
+  const params = useParams<{ id: string }>();
+  const { contents } = useContentStore();
+  const [allContents, setAllContents] = useState<contentType[]>([]);
+
+  useEffect(() => {
+    if (contents) {
+      setAllContents(contents);
+      setIsLoading(false);
+    }
+  }, [contents]);
+
+  const contentone = allContents.find((item) => item.id === params.id);
+
+  const [content, setContent] = useState<contentType>(() => {
+    return (
+      contentone || {
+        id: '',
+        title: '',
+        description: '',
+        isPublic: false,
+        link: '',
+        summary: '',
+        typeOfContent: '',
+      }
+    );
   });
 
-  const getYoutubeEmbedUrl = (url: string) => {
-    const videoId = url.split('v=')[1];
-    return `https://www.youtube.com/embed/${videoId}`;
+  useEffect(() => {
+    if (contentone) {
+      setContent(contentone);
+    }
+  }, [contentone]);
+
+  useEffect(() => {
+    if (!contentone && !isLoading) {
+      console.error('Content not found for ID:', params.id);
+    }
+  }, [contentone, isLoading, params.id]);
+
+  const getYouTubeVideoId = (url: string | undefined) => {
+    if (!url) return null;
+
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  const getYoutubeEmbedUrl = (url: string | undefined) => {
+    if (!url) return '';
+
+    const videoId = getYouTubeVideoId(url);
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
   };
 
   const filteredUsers = mockUsers.filter(
@@ -92,6 +157,14 @@ export default function ContentDetail() {
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -105,7 +178,7 @@ export default function ContentDetail() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Title</label>
                 <Input
-                  value={content.title}
+                  value={content?.title || ''}
                   onChange={(e) =>
                     setContent({ ...content, title: e.target.value })
                   }
@@ -116,7 +189,7 @@ export default function ContentDetail() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Description</label>
                 <Textarea
-                  value={content.description}
+                  value={content?.description || ''}
                   onChange={(e) =>
                     setContent({ ...content, description: e.target.value })
                   }
@@ -128,7 +201,7 @@ export default function ContentDetail() {
                 <label className="text-sm font-medium">Visibility</label>
                 <div className="flex items-center gap-2">
                   <Switch
-                    checked={content.isPublic}
+                    checked={content?.isPublic || false}
                     onCheckedChange={(checked) =>
                       setContent({ ...content, isPublic: checked })
                     }
@@ -186,34 +259,37 @@ export default function ContentDetail() {
           </header>
           <main className="flex-1 p-6 overflow-auto">
             <div className="grid grid-cols-2 gap-6 max-w-6xl mx-auto">
-              {/* Video Section */}
               <div className="space-y-4">
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted shadow-lg transition-all duration-300 hover:shadow-xl">
-                  <iframe
-                    className="w-full h-full"
-                    src={getYoutubeEmbedUrl(content.link)}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  {content?.link ? (
+                    <iframe
+                      className="w-full h-full"
+                      src={getYoutubeEmbedUrl(content.link)}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p>No video link available</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Summary Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Summary</h3>
                 <div className="prose prose-sm max-w-none">
-                  {content.summary?.split('\n').map((line, index) => (
+                  {content?.summary?.split('\n').map((line, index) => (
                     <p key={index} className="mb-2">
                       {line}
                     </p>
-                  ))}
+                  )) || <p>No summary available</p>}
                 </div>
               </div>
             </div>
           </main>
         </SidebarInset>
 
-        {/* Share Modal */}
         <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
@@ -224,7 +300,6 @@ export default function ContentDetail() {
             </DialogHeader>
 
             <div className="space-y-4">
-              {/* Search */}
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -236,7 +311,6 @@ export default function ContentDetail() {
               </div>
 
               <div className="space-y-4">
-                {/* Current Access */}
                 {sharedWith.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Current Access</h4>
@@ -274,7 +348,6 @@ export default function ContentDetail() {
                   </div>
                 )}
 
-                {/* Available Users */}
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Add People</h4>
                   <ScrollArea className="h-[200px] rounded-md border p-2">

@@ -16,6 +16,8 @@ const UserCardsDisplay = () => {
     if (!usersStore) return;
     setUsers(usersStore);
   }, [usersStore]);
+
+  console.log('users at explore page are : ', users);
   const navigate = useNavigate();
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
