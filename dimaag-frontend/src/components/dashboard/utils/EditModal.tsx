@@ -2,25 +2,24 @@
 
 import type React from 'react';
 
-import { useEffect, useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Search, UserMinus } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { contentType } from '@/types/content';
 import { userType } from '@/types/userType';
-import { useAxiosClient } from '@/config/axios';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Search, Share2, UserMinus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 type EditModalProps = {
   isOpen: boolean;
@@ -44,15 +43,7 @@ export default function EditModal({
   });
   const [users, setUsers] = useState<userType[]>([]);
 
-  const api = useAxiosClient();
-
-  useEffect(() => {
-    (async () => {
-      const response = await api.get('/user/all');
-      console.log('response form get users all,', response.data);
-      setUsers(users);
-    })();
-  }, []);
+  useEffect(() => {}, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

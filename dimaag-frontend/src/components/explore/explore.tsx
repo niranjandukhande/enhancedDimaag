@@ -1,4 +1,5 @@
-import { useAxiosClient } from '@/config/axios';
+import { useUser } from '@/hooks/useUser';
+import { useUserStore } from '@/stores/userStore';
 import { userType } from '@/types/userType';
 import { formatDate } from '@/utils/formatDate';
 import { motion } from 'framer-motion';
@@ -8,15 +9,13 @@ import { useNavigate } from 'react-router-dom';
 
 const UserCardsDisplay = () => {
   const [users, setUsers] = useState<userType[]>([]);
-  const api = useAxiosClient();
+
+  const { users: usersStore } = useUserStore();
+  useUser();
   useEffect(() => {
-    (async () => {
-      const data = await api.get('/user/all');
-      console.log(data.data);
-      if (!data.data) return;
-      setUsers(data.data);
-    })();
-  }, []);
+    if (!usersStore) return;
+    setUsers(usersStore);
+  }, [usersStore]);
   const navigate = useNavigate();
   return (
     <div className="p-8 bg-gray-50 min-h-screen">

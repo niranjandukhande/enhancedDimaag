@@ -15,7 +15,7 @@ export async function getContentWithPermission(req: Request, res: Response) {
     const user = await db.query.usersTable
       .findFirst({ where: eq(usersTable.username, username) })
       .execute();
-    console.log('user at 17 line', user);
+
     const { embeddings, ...columnsToSelect } = contentTable;
     const publicContent = await db
       //@ts-ignore
@@ -28,7 +28,7 @@ export async function getContentWithPermission(req: Request, res: Response) {
         ),
       )
       .execute();
-    console.log('public content at 25 line', publicContent);
+
     if (!token) {
       res.status(200).json({ data: publicContent });
     }
@@ -48,7 +48,7 @@ export async function getContentWithPermission(req: Request, res: Response) {
           ),
         );
       if (!contentIds) res.status(200).json({ data: publicContent });
-      console.log('content ids at 44 line', contentIds);
+
       const contentArray = await db
         .select()
         .from(contentTable)
