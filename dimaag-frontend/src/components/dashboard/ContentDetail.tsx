@@ -20,11 +20,11 @@ import {
 } from '@/components/ui/sidebar';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useUser } from '@/hooks/useUser';
 import { useContentStore } from '@/stores/content';
 import { useUserStore } from '@/stores/userStore';
 import { contentType } from '@/types/content';
 import { userType } from '@/types/userType';
-import { useUser } from '@clerk/clerk-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, Share2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
