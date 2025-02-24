@@ -20,96 +20,155 @@ import {
 } from '@/components/ui/sidebar';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useAxiosClient } from '@/config/axios';
+import { useContent } from '@/hooks/useContent';
 import { useUser } from '@/hooks/useUser';
-import { useContentStore } from '@/stores/content';
-import { useUserStore } from '@/stores/userStore';
 import { contentType } from '@/types/content';
 import { userType } from '@/types/userType';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, Share2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 
-// Mock data
-// const mockUsers = [
+// // Mock data
+// const users = [
+//   {
+//     id: 1,
+//     username: 'Alice Cooper',
+//     email: 'alice@example.com',
+//     imageUrl: '/placeholder.svg',
+//   },
+//   {
+//     id: 2,
+//     username: 'Bob Wilson',
+//     email: 'bob@example.com',
+//     imageUrl: '/placeholder.svg',
+//   },
+//   {
+//     id: 3,
+//     username: 'Carol Smith',
+//     email: 'carol@example.com',
+//     imageUrl: '/placeholder.svg',
+//   },
+//   {
+//     id: 4,
+//     username: 'David Brown',
+//     email: 'david@example.com',
+//     imageUrl: '/placeholder.svg',
+//   },
+//   {
+//     id: 5,
+//     username: 'Eve Johnson',
+//     email: 'eve@example.com',
+//     imageUrl: '/placeholder.svg',
+//   },
+// ];
+
+// const sharedWith = [
 //   {
 //     id: 1,
 //     name: 'Alice Cooper',
 //     email: 'alice@example.com',
 //     avatar: '/placeholder.svg',
 //   },
-//   {
-//     id: 2,
-//     name: 'Bob Wilson',
-//     email: 'bob@example.com',
-//     avatar: '/placeholder.svg',
-//   },
-//   {
-//     id: 3,
-//     name: 'Carol Smith',
-//     email: 'carol@example.com',
-//     avatar: '/placeholder.svg',
-//   },
-//   {
-//     id: 4,
-//     name: 'David Brown',
-//     email: 'david@example.com',
-//     avatar: '/placeholder.svg',
-//   },
-//   {
-//     id: 5,
-//     name: 'Eve Johnson',
-//     email: 'eve@example.com',
-//     avatar: '/placeholder.svg',
-//   },
 // ];
-
-const sharedWith = [
-  {
-    id: 1,
-    name: 'Alice Cooper',
-    email: 'alice@example.com',
-    avatar: '/placeholder.svg',
-  },
-];
 
 export default function ContentDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-
-  const [allUsers, setAllUsers] = useState<userType[]>([]);
-  const { users } = useUserStore();
-
-  useUser();
-
-  useEffect(() => {
-    if (!users) return;
-    setAllUsers(users);
-  }, [users]);
-
-  console.log('users at content page are : ', allUsers);
-
-  const mockUsers = allUsers.map((user) => ({
-    id: user.id, // Keeping the API's ID
-    name: user.username, // Using username as the name
-    email: user.email, // Generating an email
-    avatar: user.imageUrl, // Keeping the same placeholder avatar
-  }));
+  const queryClient = useQueryClient();
+  const users = useUser();
+  const [userWithoutPermission, setUserWithoutPermission] = useState<
+    userType[]
+  >([]);
 
   const params = useParams<{ id: string }>();
-  const { contents } = useContentStore();
+  const contents = useContent();
   const [allContents, setAllContents] = useState<contentType[]>([]);
-
+  const [sharedWith, setSharedWith] = useState<userType[]>([]);
+  const addPermission = useMutation({
+    mutationFn: async (clerkId: string) => {
+      await api.post(`/permission/`, {
+        contentId: contentone?.id,
+        sharesWith: clerkId,
+      });
+    },
+    onSuccess: () => {
+      toast.success('Permission added successfully');
+    },
+    onError: () => {
+      toast.error('Error adding permission');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['peopleWithPermission', contentone?.id],
+      });
+    },
+  });
+  const removePermission = useMutation({
+    mutationFn: async (clerkId: string) => {
+      await api.delete(`/permission/`, {
+        data: { contentId: contentone?.id, sharesWith: clerkId },
+      });
+    },
+    onSuccess: () => {
+      toast.success('Permission removed successfully');
+    },
+    onError: () => {
+      toast.error('Error removing permission');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['peopleWithPermission', contentone?.id],
+      });
+    },
+  });
   useEffect(() => {
     if (contents) {
       setAllContents(contents);
       setIsLoading(false);
     }
   }, [contents]);
-
+  const api = useAxiosClient();
   const contentone = allContents.find((item) => item.id === params.id);
-
+  const {
+    data,
+    isLoading: isLoading2,
+    isError,
+  } = useQuery({
+    queryKey: ['peopleWithPermission', contentone?.id],
+    queryFn: async () => {
+      const response = await api.get(`/permission/`);
+      return response.data;
+    },
+  });
+  useEffect(() => {
+    if (data) {
+      console.log('data ', data.data);
+      setSharedWith(data.data);
+    }
+  }, [data]);
+  useEffect(() => {
+    const toastId = isError ? toast.error('Error while loading content') : null;
+    return () => toast.dismiss(toastId || '');
+  }, [isError]);
+  useEffect(() => {
+    const toastId = isLoading2 ? toast.loading('Loading content...') : null;
+    return () => toast.dismiss(toastId || '');
+  }, [isLoading2]);
+  useEffect(() => {
+    if (users) {
+      setUserWithoutPermission(
+        users.filter(
+          (user) => !sharedWith.find((item) => item.clerkId === user.clerkId),
+        ),
+      );
+    }
+  }, [users, sharedWith]);
   const [content, setContent] = useState<contentType>(() => {
     return (
       contentone || {
@@ -152,9 +211,9 @@ export default function ContentDetail() {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
   };
 
-  const filteredUsers = mockUsers.filter(
+  const filteredUsers = userWithoutPermission?.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
@@ -165,7 +224,17 @@ export default function ContentDetail() {
       </div>
     );
   }
+  const handleRemove = async (clerkId: string | null) => {
+    console.log('clerkId', clerkId);
+    if (!clerkId) return;
+    removePermission.mutateAsync(clerkId);
+  };
+  const handleAdd = async (clerkId: string | null) => {
+    console.log('clerkId', clerkId);
+    if (!clerkId) return;
 
+    addPermission.mutateAsync(clerkId);
+  };
   return (
     <SidebarProvider>
       <div className="flex h-screen bg-background">
@@ -226,27 +295,28 @@ export default function ContentDetail() {
               </div>
 
               <div className="space-y-2">
-                {sharedWith.map((user) => (
-                  <motion.div
-                    key={user.id}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 transition-all duration-200 hover:bg-muted"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback>{user.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {user.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {user.email}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
+                {sharedWith &&
+                  sharedWith.map((user) => (
+                    <motion.div
+                      key={user.id}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 transition-all duration-200 hover:bg-muted"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.imageUrl} />
+                        <AvatarFallback>{user.username[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {user.username}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
               </div>
             </div>
           </SidebarContent>
@@ -325,11 +395,15 @@ export default function ContentDetail() {
                         >
                           <div className="flex items-center gap-2">
                             <Avatar>
-                              <AvatarImage src={user.avatar} />
-                              <AvatarFallback>{user.name[0]}</AvatarFallback>
+                              <AvatarImage src={user.imageUrl} />
+                              <AvatarFallback>
+                                {user.username[0]}
+                              </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-sm font-medium">{user.name}</p>
+                              <p className="text-sm font-medium">
+                                {user.username}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {user.email}
                               </p>
@@ -339,6 +413,7 @@ export default function ContentDetail() {
                             variant="ghost"
                             size="sm"
                             className="text-destructive hover:bg-destructive/10"
+                            onClick={() => handleRemove(user.clerkId)}
                           >
                             Remove
                           </Button>
@@ -352,7 +427,7 @@ export default function ContentDetail() {
                   <h4 className="text-sm font-medium">Add People</h4>
                   <ScrollArea className="h-[200px] rounded-md border p-2">
                     <AnimatePresence>
-                      {filteredUsers.map((user) => (
+                      {filteredUsers?.map((user) => (
                         <motion.div
                           key={user.id}
                           initial={{ opacity: 0, y: 10 }}
@@ -362,11 +437,15 @@ export default function ContentDetail() {
                         >
                           <div className="flex items-center gap-2">
                             <Avatar>
-                              <AvatarImage src={user.avatar} />
-                              <AvatarFallback>{user.name[0]}</AvatarFallback>
+                              <AvatarImage src={user.imageUrl} />
+                              <AvatarFallback>
+                                {user.username[0]}
+                              </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-sm font-medium">{user.name}</p>
+                              <p className="text-sm font-medium">
+                                {user.username}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {user.email}
                               </p>
@@ -376,6 +455,7 @@ export default function ContentDetail() {
                             variant="outline"
                             size="sm"
                             className="hover:bg-primary hover:text-primary-foreground"
+                            onClick={() => handleAdd(user.clerkId)}
                           >
                             Add
                           </Button>

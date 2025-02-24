@@ -49,18 +49,22 @@ export async function getContentWithPermission(req: Request, res: Response) {
         );
       if (!contentIds) res.status(200).json({ data: publicContent });
 
+      const { embeddings, ...columnsToSelect } = contentTable;
       const contentArray = await db
-        .select()
+        //@ts-ignore
+        .select(columnsToSelect)
         .from(contentTable)
         .where(
           inArray(
             contentTable.id,
-            contentIds.map((id) => id.id),
+            contentIds.map((curr) => curr.contentId),
           ),
         )
         .execute();
+      // console.log('contentArray', contentArray);
+      const finalContent = publicContent.concat(contentArray);
 
-      res.status(200).json({ data: [...publicContent, contentArray] });
+      res.status(200).json({ data: finalContent });
     }
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
@@ -80,6 +84,7 @@ export async function addPermission(req: Request, res: Response) {
       sharesWith: sharesWith,
       owner: userId,
     };
+
     await db.insert(permissionTable).values(data);
     res.status(200).json({
       message: 'permission updated successfully',
@@ -88,6 +93,54 @@ export async function addPermission(req: Request, res: Response) {
     console.log('error while setting permissions', error);
     res.status(500).json({
       message: 'error while inserting',
+      error: error,
+    });
+  }
+}
+export async function getSharedWithPeople(req: Request, res: Response) {
+  try {
+    const userId = req.userId;
+    const sharedWithMe = await db
+      .select()
+      .from(permissionTable)
+      .where(eq(permissionTable.owner, userId))
+      .execute();
+    const users = await db
+      .select()
+      .from(usersTable)
+      .where(
+        inArray(
+          usersTable.clerkId,
+          sharedWithMe.map((item) => item.sharesWith),
+        ),
+      )
+      .execute();
+    res.status(200).json({ data: users });
+  } catch (error) {
+    console.error('error while getting shared with people', error);
+    res.status(500).json({ message: 'error while getting shared with people' });
+  }
+}
+export async function removePermisson(req: Request, res: Response) {
+  try {
+    const userId = req.userId;
+    const { contentId, sharesWith } = req.body;
+
+    await db
+      .delete(permissionTable)
+      .where(
+        and(
+          eq(permissionTable.contentId, contentId),
+          eq(permissionTable.owner, userId),
+          eq(permissionTable.sharesWith, sharesWith),
+        ),
+      );
+    res.status(200).json({
+      message: 'permission removed successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'error while removing permission',
       error: error,
     });
   }

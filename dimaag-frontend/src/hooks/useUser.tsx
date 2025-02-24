@@ -5,7 +5,8 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 export const useUser = () => {
-  const { setUsers } = useUserStore();
+  const { setUsers, users } = useUserStore();
+
   const api = useAxiosClient();
 
   const { data, isLoading, isError } = useQuery({
@@ -16,6 +17,7 @@ export const useUser = () => {
     },
     gcTime: 60 * 1000,
     staleTime: 60 * 1000,
+    enabled: !users,
   });
 
   useEffect(() => {
@@ -33,4 +35,5 @@ export const useUser = () => {
       setUsers(data.data);
     }
   }, [data]);
+  return users;
 };

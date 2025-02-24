@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 export const useContent = () => {
-  const { setContents } = useContentStore();
+  const { setContents, contents } = useContentStore();
   const api = useAxiosClient();
 
   const { data, isLoading, isError } = useQuery({
@@ -19,6 +19,7 @@ export const useContent = () => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
+    enabled: !contents,
   });
 
   useEffect(() => {
@@ -36,4 +37,5 @@ export const useContent = () => {
       setContents(data.data);
     }
   }, [data, setContents]);
+  return contents;
 };

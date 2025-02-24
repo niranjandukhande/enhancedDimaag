@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "unique_permission_combination" ON "permissions" USING btree ("contentId","owner","sharesWith");

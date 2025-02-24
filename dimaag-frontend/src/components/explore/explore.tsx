@@ -1,28 +1,18 @@
 import { useUser } from '@/hooks/useUser';
-import { useUserStore } from '@/stores/userStore';
-import { userType } from '@/types/userType';
 import { formatDate } from '@/utils/formatDate';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const UserCardsDisplay = () => {
-  const [users, setUsers] = useState<userType[]>([]);
-
-  const { users: usersStore } = useUserStore();
-  useUser();
-  useEffect(() => {
-    if (!usersStore) return;
-    setUsers(usersStore);
-  }, [usersStore]);
+  const users = useUser();
 
   console.log('users at explore page are : ', users);
   const navigate = useNavigate();
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((user, index) => (
+        {users?.map((user, index) => (
           <motion.button
             onClick={() => {
               navigate(`/explore/${user.username}`);
