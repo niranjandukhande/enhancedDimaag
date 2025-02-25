@@ -59,12 +59,16 @@ export async function addContent(req: Request, res: Response): Promise<void> {
 export async function getContent(req: Request, res: Response) {
   try {
     const { embeddings, ...columnsToSelect } = contentTable;
+    const page = req.query.page ? parseInt(req.query.page as string): 0;
+    const PAGE_SIZE = 9
 
     const content = await db
       //@ts-ignore
       .select(columnsToSelect)
       .from(contentTable)
       .where(eq(contentTable.userId, req.userId))
+      .limit(PAGE_SIZE)
+      .offset(page*PAGE_SIZE)
       .execute();
 
     res.status(200).json({

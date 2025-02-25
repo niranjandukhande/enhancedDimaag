@@ -87,6 +87,8 @@ export default function ContentDetail() {
   >([]);
 
   const params = useParams<{ id: string }>();
+
+  //       WORKS AS OF NOW, BUT SINCE THE USE CONTENT HOOK IS CHANGED TO TAKE PAGENUMBER AS PARAMETER / argument, SHOWS SQUIGGLY LINES, HEHE
   const contents = useContent();
   const [allContents, setAllContents] = useState<contentType[]>([]);
   const [sharedWith, setSharedWith] = useState<userType[]>([]);

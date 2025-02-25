@@ -16,13 +16,24 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+//////////////////////////////////////////////////////////////////////////////////
+///                              TODO: CHANGE PAGINATION THINGY TO BE ADDED IN THE STORE
+///
+///      - pagination works as intented
+///      - prev page button will get disabled if page number is already at 0
+///      - get the total number of pages from backend, (to disable if next page is not available)
+///      - SUBAH UTH KE ADD MAT KAR DE, APAN JAB HONGE TAB HI KARNA
+///
+//////////////////////////////////////////////////////////////////////////////////
+
 const ContentDisplay = () => {
   const { contents } = useContentStore();
   const [content, setContent] = useState<contentType[]>([]);
+  const [pageNumber, setPageNumber] = useState(0);
 
   const navigate = useNavigate();
 
-  useContent();
+  useContent(pageNumber);
 
   useEffect(() => {
     if (contents) {
@@ -78,6 +89,13 @@ const ContentDisplay = () => {
 
   return (
     <>
+      <Button
+        disabled={pageNumber === 0}
+        onClick={() => setPageNumber(pageNumber - 1)}
+      >
+        Previous Page
+      </Button>
+      <Button onClick={() => setPageNumber(pageNumber + 1)}>Next Page</Button>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 ">
         {content &&
           content.map((item, index) => (
@@ -132,6 +150,13 @@ const ContentDisplay = () => {
             </div>
           ))}
       </div>
+      {/* <Button
+        disabled={pageNumber === 0}
+        onClick={() => setPageNumber(pageNumber - 1)}
+      >
+        Previous Page
+      </Button>
+      <Button onClick={() => setPageNumber(pageNumber + 1)}>Next Page</Button> */}
 
       <Dialog open={previewModal.isOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="sm:max-w-[900px] p-0">

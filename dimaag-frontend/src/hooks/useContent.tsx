@@ -4,14 +4,25 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-export const useContent = () => {
+//////////////////////////////////////////////////////////////////////////////////
+///                              TODO: Added pagination
+///
+///      - added pagenumber as an arg/parameter while using useContent
+///      - YEH BHI CHANGE MAT KARNA AKELE AKELE. : ) : ) : )
+///      - claude ko poocha tha aur kuch kar sakte hai kya usne ek mast answer dia hai, toh voh hi kar lenge, kal jab aayenge tab karte hai.
+///
+//////////////////////////////////////////////////////////////////////////////////
+
+export const useContent = (pageNumber: Number) => {
   const { setContents, contents } = useContentStore();
   const api = useAxiosClient();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['content'],
+    queryKey: ['content', pageNumber],
     queryFn: async () => {
-      const response = await api.get('/content');
+      const response = await api.get('/content', {
+        params: { page: pageNumber },
+      });
       return response.data;
     },
     gcTime: 24 * 60 * 60 * 1000,
@@ -19,7 +30,7 @@ export const useContent = () => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    enabled: !contents,
+    // enabled: !contents,
   });
 
   useEffect(() => {

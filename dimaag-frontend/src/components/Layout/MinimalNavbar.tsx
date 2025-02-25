@@ -6,11 +6,26 @@ import { useAxiosClient } from '@/config/axios';
 import { Input } from '../ui/input';
 import { useContentStore } from '@/stores/content';
 
+//////////////////////////////////////////////////////////////////////////////////
+///                              TODO: search functionality
+///
+///      - now the search only works on /dashboard, it wont work on /explore
+///      - make 2 different components for searching explore page and content page
+///
+//////////////////////////////////////////////////////////////////////////////////
+
 const MinimalNavbar = () => {
   const [input, setInput] = useState('');
   const api = useAxiosClient();
   const { setContents } = useContentStore();
   const timerRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  //            TO CHECK THE CURRENT URL (CAN REMOVE)
+  // useEffect(() => {
+  //   console.log(location.pathname);
+  // }, [location.pathname]);
 
   const fetchSearchResults = async (query: string) => {
     if (query === '') return;
@@ -26,6 +41,9 @@ const MinimalNavbar = () => {
 
   // Effect for debounced search
   useEffect(() => {
+    //          ADDED TO WORK ONLY ON DASHBOARD, WONT WORK ON /EXPLORE
+    if (location.pathname !== '/dashboard') return;
+
     // Clear previous timer
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -46,9 +64,6 @@ const MinimalNavbar = () => {
       }
     };
   }, [input]); // Run effect when input changes
-
-  const location = useLocation();
-  const navigate = useNavigate();
 
   return (
     <nav className="z-50 bg-white border-b border-gray-100 shadow-sm">
