@@ -59,6 +59,7 @@ export async function addContent(req: Request, res: Response): Promise<void> {
 export async function getContent(req: Request, res: Response) {
   try {
     const { embeddings, ...columnsToSelect } = contentTable;
+
     const content = await db
       //@ts-ignore
       .select(columnsToSelect)

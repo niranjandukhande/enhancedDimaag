@@ -1,7 +1,7 @@
 import { Search, User } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAxiosClient } from '@/config/axios';
 import { Input } from '../ui/input';
 import { useContentStore } from '@/stores/content';
@@ -10,15 +10,46 @@ const MinimalNavbar = () => {
   const [input, setInput] = useState('');
   const api = useAxiosClient();
   const { setContents } = useContentStore();
-  const handleClick = async () => {
-    if (input === '') return;
-    const response = await api.post('/content/search', { query: input });
-    console.log('Response from search query is : ', response.data);
-    setContents(response.data);
+  const timerRef = useRef(null);
+
+  const fetchSearchResults = async (query: string) => {
+    if (query === '') return;
+
+    try {
+      const response = await api.post('/content/search', { query });
+      console.log('Response from search query is : ', response.data);
+      setContents(response.data);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
   };
+
+  // Effect for debounced search
+  useEffect(() => {
+    // Clear previous timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    // Set new timer for 3 seconds
+    if (input !== '') {
+      //@ts-ignore
+      timerRef.current = setTimeout(() => {
+        fetchSearchResults(input);
+      }, 500);
+    }
+
+    // Cleanup function
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [input]); // Run effect when input changes
 
   const location = useLocation();
   const navigate = useNavigate();
+
   return (
     <nav className="z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,7 +76,6 @@ const MinimalNavbar = () => {
                 placeholder="Search..."
               />
             </div>
-            <Button onClick={handleClick}>GO</Button>
           </div>
 
           <div className="flex items-center space-x-8">

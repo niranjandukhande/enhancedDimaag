@@ -78,7 +78,7 @@ const ContentDisplay = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 ">
         {content &&
           content.map((item, index) => (
             <div
@@ -87,7 +87,7 @@ const ContentDisplay = () => {
               className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="group relative bg-card-soft hover:bg-card-hover rounded-xl p-6 transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-xl shadow-lg">
+              <div className="group relative bg-card-soft hover:bg-card-hover rounded-xl p-8 mt-10 transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-xl shadow-lg">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
