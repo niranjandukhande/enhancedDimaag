@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { useState, useEffect, useRef } from 'react';
 import { useAxiosClient } from '@/config/axios';
 import { Input } from '../ui/input';
-import { useContentStore } from '@/stores/content';
+import { useContentStore } from '@/stores/contentStore';
 
 //////////////////////////////////////////////////////////////////////////////////
 ///                              TODO: search functionality

@@ -42,9 +42,24 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/:id"
+            element={
+              <ProtectedRoute>
+                <ContentDetail />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/dashboard/:id" element={<ContentDetail />} />
+
           <Route path="/explore/:username" element={<Brain />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />

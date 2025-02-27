@@ -1,3 +1,4 @@
+import YoutubeSummaryModal from '@/components/SummaryModal';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,29 +9,17 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useAxiosClient } from '@/config/axios';
 import { useContent } from '@/hooks/useContent';
-import { useContentStore } from '@/stores/content';
 import { contentType } from '@/types/content';
 import { useQueryClient } from '@tanstack/react-query';
 import { Play, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-//////////////////////////////////////////////////////////////////////////////////
-///                              TODO: CHANGE PAGINATION THINGY TO BE ADDED IN THE STORE
-///
-///      - pagination works as intented
-///      - prev page button will get disabled if page number is already at 0
-///      - get the total number of pages from backend, (to disable if next page is not available)
-///      - SUBAH UTH KE ADD MAT KAR DE, APAN JAB HONGE TAB HI KARNA
-///
-//////////////////////////////////////////////////////////////////////////////////
 
 const ContentDisplay = ({ content }: { content: contentType[] }) => {
   const [pageNumber, setPageNumber] = useState(0);
 
   const location = useLocation();
-  console.log(location.pathname.includes('/explore'));
 
   const navigate = useNavigate();
 
@@ -128,29 +117,44 @@ const ContentDisplay = ({ content }: { content: contentType[] }) => {
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-                    <Button
-                      onClick={() => handlePreviewClick(item.link, item.title)}
-                      className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
-                    >
-                      <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
-                      <Play className="w-4 h-4 mr-2" />
-                      Preview
-                    </Button>
-
                     {!location.pathname.includes('/explore') ? (
-                      <Button
-                        disabled={location.pathname.includes('/explore')}
-                        onClick={() => handleDelete(item.id!)}
-                        className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
-                      >
-                        <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
+                      <>
+                        <Button
+                          onClick={() =>
+                            handlePreviewClick(item.link, item.title)
+                          }
+                          className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                        >
+                          <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                          <Play className="w-4 h-4 mr-2" />
+                          Preview
+                        </Button>
+                        <Button
+                          disabled={location.pathname.includes('/explore')}
+                          onClick={() => handleDelete(item.id!)}
+                          className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                        >
+                          <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </Button>
+                      </>
                     ) : (
-                      <Button className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300">
-                        Summary
-                      </Button>
+                      <YoutubeSummaryModal
+                        props={{
+                          title: item.title,
+                          url: getYouTubeVideoId(item.link) || '',
+                          date: String(Date.now()),
+                          keyPoints: [
+                            'Next.js and React Server Components are revolutionizing rendering strategies',
+                            'AI tools are accelerating development workflows and code quality',
+                            'Edge computing enables faster, more reliable global deployments',
+                            "Web Assembly is expanding what's possible in browser environments",
+                            'Performance and accessibility are becoming primary concerns, not afterthoughts',
+                          ],
+                          summary: item.summary!,
+                        }}
+                      />
                     )}
                   </div>
                 </div>

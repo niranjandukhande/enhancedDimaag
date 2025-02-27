@@ -1,17 +1,8 @@
 import { useAxiosClient } from '@/config/axios';
-import { useContentStore } from '@/stores/content';
+import { useContentStore } from '@/stores/contentStore';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
-
-//////////////////////////////////////////////////////////////////////////////////
-///                              TODO: Added pagination
-///
-///      - added pagenumber as an arg/parameter while using useContent
-///      - YEH BHI CHANGE MAT KARNA AKELE AKELE. : ) : ) : )
-///      - claude ko poocha tha aur kuch kar sakte hai kya usne ek mast answer dia hai, toh voh hi kar lenge, kal jab aayenge tab karte hai.
-///
-//////////////////////////////////////////////////////////////////////////////////
 
 export const useContent = (pageNumber?: Number) => {
   const { setContents, contents } = useContentStore();

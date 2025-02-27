@@ -5,7 +5,12 @@ import rootRouter from '@/routes/index';
 import morgan from 'morgan';
 export const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(
+  cors({
+    origin: ['http://localhost:5173', 'https://www.youtube.com'],
+    credentials: true,
+  }),
+);
 app.use(morgan('dev'));
 
 app.use((err: Errback, req: Request, res: Response, _next: Function) => {

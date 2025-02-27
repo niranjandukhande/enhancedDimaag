@@ -59,8 +59,8 @@ export async function addContent(req: Request, res: Response): Promise<void> {
 export async function getContent(req: Request, res: Response) {
   try {
     const { embeddings, ...columnsToSelect } = contentTable;
-    const page = req.query.page ? parseInt(req.query.page as string): 0;
-    const PAGE_SIZE = 9
+    const page = req.query.page ? parseInt(req.query.page as string) : 0;
+    const PAGE_SIZE = 9;
 
     const content = await db
       //@ts-ignore
@@ -68,7 +68,7 @@ export async function getContent(req: Request, res: Response) {
       .from(contentTable)
       .where(eq(contentTable.userId, req.userId))
       .limit(PAGE_SIZE)
-      .offset(page*PAGE_SIZE)
+      .offset(page * PAGE_SIZE)
       .execute();
 
     res.status(200).json({
@@ -115,7 +115,7 @@ export async function searchContent(req: Request, res: Response) {
     const similarContent = await db
       .select()
       .from(contentTable)
-      .where(and(gt(similarities, 0.5), eq(contentTable.userId, userId)))
+      .where(and(gt(similarities, 0.3), eq(contentTable.userId, userId)))
       .execute();
     const end = Date.now();
 
