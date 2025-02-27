@@ -1,9 +1,11 @@
 'use client';
 
+import type React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { Calendar, Play, ThumbsUp, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface YoutubeSummaryModalProps {
   title: string;
@@ -19,6 +21,34 @@ export default function YoutubeSummaryModal({
   props: YoutubeSummaryModalProps;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Handle ESC key press to close modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscKey);
+      // Prevent body scrolling when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
+  // Handle click outside to close
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      setIsOpen(false);
+    }
+  };
 
   return (
     <>
@@ -27,23 +57,30 @@ export default function YoutubeSummaryModal({
           console.log('clicked');
           setIsOpen(true);
         }}
-        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl text-white px-4 py-2 rounded-md flex items-center"
+        className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
       >
-        <Play className="mr-2 h-4 w-4" /> Get Video Summary
+        <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+        <Play className="w-4 h-4 mr-2 inline" /> Summary
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={handleOverlayClick}
+        >
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-lg shadow-lg max-w-lg w-full relative overflow-hidden"
+            className="bg-white rounded-lg shadow-lg w-full max-w-lg relative overflow-hidden max-h-[90vh] flex flex-col"
           >
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-3 right-3 bg-gray-200 hover:bg-gray-300 rounded-full p-1"
+              className="absolute top-3 right-3 bg-gray-200 hover:bg-gray-300 rounded-full p-1.5 z-10 shadow-md transition-all duration-200 hover:scale-110"
+              aria-label="Close modal"
             >
               <X className="h-5 w-5 text-gray-700" />
             </button>
@@ -55,18 +92,21 @@ export default function YoutubeSummaryModal({
             >
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${props.url}`}
+                src={`https://www.youtube.com/embed/${props.url.includes('v=') ? props.url.split('v=')[1] : props.url}`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                title={props.title}
               />
             </div>
 
             {/* Content */}
-            <div className="p-6">
+            <div className="p-6 overflow-y-auto">
               <Badge className="bg-red-600 hover:bg-red-700 mb-2">
                 YouTube Summary
               </Badge>
-              <h3 className="text-xl font-bold line-clamp-1">{props.title}</h3>
+              <h3 className="text-xl font-bold line-clamp-2 mb-2">
+                {props.title}
+              </h3>
 
               {/* Meta Info */}
               <div className="flex flex-wrap gap-3 mb-4 text-sm text-gray-600">

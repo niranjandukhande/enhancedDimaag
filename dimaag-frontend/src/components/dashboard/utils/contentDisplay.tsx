@@ -62,6 +62,27 @@ const ContentDisplay = ({ content }: { content: contentType[] }) => {
       ...previewModal,
       isOpen: false,
     });
+
+    setSummaryModal({
+      ...summaryModal,
+      isOpen: false,
+    });
+  };
+
+  const [summaryModal, setSummaryModal] = useState({
+    isOpen: false,
+    summary: '',
+    title: '',
+    link: '',
+  });
+
+  const handleSummaryClick = (title: string, summary: string, link: string) => {
+    setSummaryModal({
+      isOpen: true,
+      summary: summary,
+      title: title,
+      link: link,
+    });
   };
 
   const getYouTubeVideoId = (url: string) => {
@@ -84,13 +105,13 @@ const ContentDisplay = ({ content }: { content: contentType[] }) => {
         {content &&
           content.map((item, index) => (
             <div
-              onClick={() => {
-                {
-                  if (!location.pathname.includes('/explore')) {
-                    navigate(`/dashboard/${item.id}`);
-                  }
-                }
-              }}
+              // onClick={() => {
+              //   {
+              //     if (!location.pathname.includes('/explore')) {
+              //       navigate(`/dashboard/${item.id}`);
+              //     }
+              //   }
+              // }}
               key={item.id}
               className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
@@ -140,21 +161,37 @@ const ContentDisplay = ({ content }: { content: contentType[] }) => {
                         </Button>
                       </>
                     ) : (
-                      <YoutubeSummaryModal
-                        props={{
-                          title: item.title,
-                          url: getYouTubeVideoId(item.link) || '',
-                          date: String(Date.now()),
-                          keyPoints: [
-                            'Next.js and React Server Components are revolutionizing rendering strategies',
-                            'AI tools are accelerating development workflows and code quality',
-                            'Edge computing enables faster, more reliable global deployments',
-                            "Web Assembly is expanding what's possible in browser environments",
-                            'Performance and accessibility are becoming primary concerns, not afterthoughts',
-                          ],
-                          summary: item.summary!,
-                        }}
-                      />
+                      <>
+                        {/* <YoutubeSummaryModal
+                          props={{
+                            title: item.title,
+                            url: item.link?.split('v=')[1] || item.link,
+                            date: item.date || new Date().toISOString(),
+                            keyPoints: item.keyPoints || [
+                              'First key point about the video',
+                              'Second important takeaway from the content',
+                              'Final insight from the video',
+                            ],
+                            summary:
+                              item.summary ||
+                              'This is a placeholder summary for the video. Replace this with the actual summary content from your data source.',
+                          }}
+                        /> */}
+                        <Button
+                          onClick={() =>
+                            handleSummaryClick(
+                              item.title,
+                              item.summary!,
+                              item.link,
+                            )
+                          }
+                          className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                        >
+                          <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                          <Play className="w-4 h-4 mr-2" />
+                          Summary
+                        </Button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -179,6 +216,37 @@ const ContentDisplay = ({ content }: { content: contentType[] }) => {
                 allowFullScreen
               />
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={summaryModal.isOpen} onOpenChange={handleCloseModal}>
+        <DialogContent className="sm:max-w-[900px] p-0">
+          <DialogHeader className="p-6">
+            <DialogTitle>{summaryModal.title}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col">
+            {/* Video section */}
+            <div
+              className="relative w-full"
+              style={{ paddingBottom: '56.25%' }}
+            >
+              {summaryModal.link && (
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src={`https://www.youtube.com/embed/${getYouTubeVideoId(
+                    summaryModal.link,
+                  )}?autoplay=0`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              )}
+            </div>
+
+            {/* Summary section */}
+            <div className="p-6">
+              {summaryModal.summary && <div>{summaryModal.summary}</div>}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
