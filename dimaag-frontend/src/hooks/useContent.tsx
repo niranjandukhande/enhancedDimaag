@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 ///
 //////////////////////////////////////////////////////////////////////////////////
 
-export const useContent = (pageNumber: Number) => {
+export const useContent = (pageNumber?: Number) => {
   const { setContents, contents } = useContentStore();
   const api = useAxiosClient();
 

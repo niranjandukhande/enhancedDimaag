@@ -1,15 +1,47 @@
 import { useAxiosClient } from '@/config/axios';
-import { useEffect } from 'react';
+import { contentType } from '@/types/content';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import ContentDisplay from '../dashboard/utils/contentDisplay';
 
 export default function Brain() {
+  const [content, setContent] = useState<contentType[]>();
+
   const { username } = useParams();
   const api = useAxiosClient();
-  useEffect(() => {
-    (async () => {
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['brain', username],
+    queryFn: async () => {
       const res = await api.get(`/permission/${username}`);
-      console.log('res', res.data);
-    })();
-  }, [username]);
-  return <div>userBrain</div>;
+      return res.data;
+    },
+    staleTime: 1000 * 60,
+    refetchOnMount: false,
+  });
+  useEffect(() => {
+    const toastId = isError ? toast.error('Error while loading content') : null;
+    return () => toast.dismiss(toastId || '');
+  }, [isError]);
+
+  useEffect(() => {
+    const toastId = isLoading ? toast.loading('Loading content...') : null;
+    return () => toast.dismiss(toastId || '');
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (data) {
+      setContent(data.data);
+    }
+  }, [data, setContent]);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const res = await api.get(`/permission/${username}`);
+  //     console.log('res', res.data);
+  //   })();
+  // }, [username]);
+  return <>{content && <ContentDisplay content={content} />}</>;
 }

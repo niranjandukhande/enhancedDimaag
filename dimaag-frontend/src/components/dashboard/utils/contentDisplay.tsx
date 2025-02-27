@@ -14,7 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Play, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 //////////////////////////////////////////////////////////////////////////////////
 ///                              TODO: CHANGE PAGINATION THINGY TO BE ADDED IN THE STORE
@@ -26,20 +26,15 @@ import { useNavigate } from 'react-router-dom';
 ///
 //////////////////////////////////////////////////////////////////////////////////
 
-const ContentDisplay = () => {
-  const { contents } = useContentStore();
-  const [content, setContent] = useState<contentType[]>([]);
+const ContentDisplay = ({ content }: { content: contentType[] }) => {
   const [pageNumber, setPageNumber] = useState(0);
+
+  const location = useLocation();
+  console.log(location.pathname.includes('/explore'));
 
   const navigate = useNavigate();
 
   useContent(pageNumber);
-
-  useEffect(() => {
-    if (contents) {
-      setContent(contents);
-    }
-  }, [contents]);
 
   const [previewModal, setPreviewModal] = useState({
     isOpen: false,
@@ -100,7 +95,13 @@ const ContentDisplay = () => {
         {content &&
           content.map((item, index) => (
             <div
-              onClick={() => navigate(`/dashboard/${item.id}`)}
+              onClick={() => {
+                {
+                  if (!location.pathname.includes('/explore')) {
+                    navigate(`/dashboard/${item.id}`);
+                  }
+                }
+              }}
               key={item.id}
               className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
@@ -136,27 +137,27 @@ const ContentDisplay = () => {
                       Preview
                     </Button>
 
-                    <Button
-                      onClick={() => handleDelete(item.id!)}
-                      className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
-                    >
-                      <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </Button>
+                    {!location.pathname.includes('/explore') ? (
+                      <Button
+                        disabled={location.pathname.includes('/explore')}
+                        onClick={() => handleDelete(item.id!)}
+                        className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300"
+                      >
+                        <span className="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </Button>
+                    ) : (
+                      <Button className="w-full bg-black hover:bg-gray-900 text-white group overflow-hidden relative transition-all duration-300">
+                        Summary
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           ))}
       </div>
-      {/* <Button
-        disabled={pageNumber === 0}
-        onClick={() => setPageNumber(pageNumber - 1)}
-      >
-        Previous Page
-      </Button>
-      <Button onClick={() => setPageNumber(pageNumber + 1)}>Next Page</Button> */}
 
       <Dialog open={previewModal.isOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="sm:max-w-[900px] p-0">
