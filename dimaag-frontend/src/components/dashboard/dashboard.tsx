@@ -1,15 +1,35 @@
-import LinkModel from '@/components/dashboard/utils/LinkModel';
-import ContentDisplay from '@/components/dashboard/utils/contentDisplay';
+import { useInfiniteContent } from '@/hooks/useInfinite';
+import ContentInfinite from './utils/contentInfinite';
+import ContentDisplay from './utils/contentDisplay';
 import { useContent } from '@/hooks/useContent';
 
 function Dashboard() {
-  const content = useContent();
+  const {
+    content,
+    error,
+    status,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteContent();
+
+  // const content = useContent();
 
   return (
-    <>
-      <LinkModel />
-      {content && <ContentDisplay content={content} />}
-    </>
+    <div className="bg-[#2F3C7E]">
+      {/* <LinkModel /> */}
+      {content && (
+        <ContentInfinite
+          content={content}
+          error={error}
+          status={status}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+        />
+      )}
+      {/* {content && <ContentDisplay content={content} />} */}
+    </div>
   );
 }
 

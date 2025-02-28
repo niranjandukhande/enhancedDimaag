@@ -9,8 +9,11 @@ const UserCardsDisplay = () => {
 
   console.log('users at explore page are : ', users);
   const navigate = useNavigate();
+
+  if (users?.length == 0) return <div>Loading...</div>;
+
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {users?.map((user, index) => (
           <motion.button

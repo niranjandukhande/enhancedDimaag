@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import ContentDisplay from '../dashboard/utils/contentDisplay';
+import ExploreDisplay from '../dashboard/utils/exploreDisplay';
 
 export default function Brain() {
   const [content, setContent] = useState<contentType[]>();
@@ -37,11 +38,18 @@ export default function Brain() {
     }
   }, [data, setContent]);
 
+  console.log(content);
+
   // useEffect(() => {
   //   (async () => {
   //     const res = await api.get(`/permission/${username}`);
   //     console.log('res', res.data);
   //   })();
   // }, [username]);
-  return <>{content && <ContentDisplay content={content} />}</>;
+  return (
+    <>
+      {/* {content && <ContentDisplay content={content} />} */}
+      {content && <ExploreDisplay content={content} />}
+    </>
+  );
 }

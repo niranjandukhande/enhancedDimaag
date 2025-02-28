@@ -60,7 +60,7 @@ export async function getContent(req: Request, res: Response) {
   try {
     const { embeddings, ...columnsToSelect } = contentTable;
     const page = req.query.page ? parseInt(req.query.page as string) : 0;
-    const PAGE_SIZE = 9;
+    const PAGE_SIZE = 7;
 
     const content = await db
       //@ts-ignore
@@ -71,8 +71,12 @@ export async function getContent(req: Request, res: Response) {
       .offset(page * PAGE_SIZE)
       .execute();
 
+      const nextPage = content.length === PAGE_SIZE ? page + 1 : undefined;
+
     res.status(200).json({
       data: content,
+      nextPage: nextPage,
+      page: page
     });
   } catch (err) {
     console.error('Error fetching Content:', err);

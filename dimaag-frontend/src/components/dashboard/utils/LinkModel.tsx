@@ -103,13 +103,13 @@ function LinkModel() {
     <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button>Add New Link</Button>
+          <Button className="bg-[#2F3C7E]">Add New Link</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-[#2F3C7E] text-[#FBEAEB]">
           <DialogHeader>
-            <DialogTitle>Add New Link</DialogTitle>
+            <DialogTitle className="text-[#FBEAEB]">Add New Link</DialogTitle>
           </DialogHeader>
-          <Card>
+          <Card className="bg-[#FBEAEB]">
             <CardHeader>
               <CardTitle>Enter Link Details</CardTitle>
             </CardHeader>
@@ -117,6 +117,7 @@ function LinkModel() {
               <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
+                  className="border-[#2F3C7E] border"
                   id="title"
                   name="title"
                   value={formData.title}
@@ -130,7 +131,7 @@ function LinkModel() {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="h-24 resize-none"
+                  className="h-24 resize-none border-[#2F3C7E] border"
                 />
               </div>
               <div className="space-y-2">
@@ -140,6 +141,7 @@ function LinkModel() {
                   name="link"
                   value={formData.link}
                   onChange={handleInputChange}
+                  className="border-[#2F3C7E] border"
                 />
               </div>
               <div className="space-y-2">
@@ -148,7 +150,7 @@ function LinkModel() {
                   onValueChange={handleSelectChange}
                   value={formData.platform}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="border-[#2F3C7E] border">
                     <SelectValue placeholder="Select a platform" />
                   </SelectTrigger>
                   <SelectContent>
@@ -158,7 +160,7 @@ function LinkModel() {
                         YouTube
                       </div>
                     </SelectItem>
-                    <SelectItem value="twitter">
+                    <SelectItem value="twitter" disabled={true}>
                       <div className="flex items-center">
                         <Twitter className="mr-2" size={16} />
                         Twitter
@@ -185,7 +187,12 @@ function LinkModel() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSave}>Save</Button>
+              <Button
+                className="bg-[#2F3C7E] hover:bg-red-800"
+                onClick={handleSave}
+              >
+                Save
+              </Button>
             </CardFooter>
           </Card>
         </DialogContent>

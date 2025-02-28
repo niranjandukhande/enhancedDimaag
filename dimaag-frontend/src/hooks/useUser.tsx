@@ -33,6 +33,7 @@ export const useUser = () => {
   useEffect(() => {
     if (data) {
       setUsers(data.data);
+      console.log('sfasfasfasfs');
     }
   }, [data]);
   return users;

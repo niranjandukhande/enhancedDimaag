@@ -14,9 +14,12 @@ import ContentDetail from './components/dashboard/ContentDetail';
 
 export default function App() {
   return (
-    <>
+    <div className="bg-[#2F3C7E] pt-1">
       <BrowserRouter>
-        <MinimalNavbar />
+        <div className="flex justify-center">
+          <MinimalNavbar />
+        </div>
+
         <Routes>
           <Route
             path="/signup"
@@ -65,6 +68,6 @@ export default function App() {
           <Route path="/" element={<Home />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </div>
   );
 }
