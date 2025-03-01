@@ -3,15 +3,14 @@ import Signup from '@/components/auth/signUp';
 import SSOCallback from '@/components/auth/ssoCallBack';
 import Dashboard from '@/components/dashboard/dashboard';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Explore from './components/explore/explore';
+import ContentDetail from './components/dashboard/ContentDetail';
+import Design2Dashboard from './components/dashboard/utils/dashboard1';
+import Brain from './components/explore/brain';
+import ExploreUsers from './components/explore/newExplore';
 import Home from './components/home';
-import MinimalNavbar from './components/Layout/MinimalNavbar';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
-import Brain from './components/explore/brain';
-import ContentDetail from './components/dashboard/ContentDetail';
-import Design2Dashboard from './components/dashboard/utils/dashboard1';
 
 export default function App() {
   return (
@@ -62,7 +61,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/explore" element={<Explore />} />
+          <Route path="/explore" element={<ExploreUsers />} />
 
           <Route path="/explore/:username" element={<Brain />} />
           <Route path="/ssocallback" element={<SSOCallback />} />

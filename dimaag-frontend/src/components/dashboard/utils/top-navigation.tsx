@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link, useLocation } from 'react-router-dom';
+import { AddContentModal } from './addModel';
+import { ProfileModalDesign1 } from './profileDesign';
 // import { AddContentModal } from "@/components/add-content-modal";
 // import { ProfileModalDesign1 } from "./profile-modal-design1";
 
@@ -65,7 +67,7 @@ export function TopNavigation() {
                       <Link
                         to="/design2"
                         className={`flex items-center gap-2 text-base ${
-                          isActive('/design2') && !isActive('/design2/explore')
+                          isActive('/design2') && !isActive('/explore')
                             ? 'font-medium text-accent'
                             : 'text-muted-foreground'
                         }`}
@@ -74,9 +76,9 @@ export function TopNavigation() {
                         Home
                       </Link>
                       <Link
-                        to="/design2/explore"
+                        to="/explore"
                         className={`flex items-center gap-2 text-base ${
-                          isActive('/design2/explore')
+                          isActive('/explore')
                             ? 'font-medium text-accent'
                             : 'text-muted-foreground'
                         }`}
@@ -106,14 +108,14 @@ export function TopNavigation() {
                     <path d="M2 12l10 5 10-5" />
                   </svg>
                 </div>
-                <span className="text-lg font-semibold text-accent">
+                <span className="text-lg font-semibold  text-black">
                   ContentHub
                 </span>
               </Link>
 
               <nav className="hidden md:flex md:items-center md:gap-6">
                 <Link
-                  to="/design2"
+                  to="/explore"
                   className={`relative flex items-center gap-1 text-sm font-medium ${
                     isActive('/design2') && !isActive('/design2/explore-alt')
                       ? 'text-foreground'
@@ -133,7 +135,7 @@ export function TopNavigation() {
                   )}
                 </Link>
                 <Link
-                  to="/design2/explore-alt"
+                  to="/explore"
                   className={`relative flex items-center gap-1 text-sm font-medium ${
                     isActive('/design2/explore')
                       ? 'text-foreground'
@@ -228,14 +230,14 @@ export function TopNavigation() {
         </div>
       </header>
 
-      {/* <ProfileModalDesign1
+      <ProfileModalDesign1
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
       />
       <AddContentModal
         isOpen={isAddContentOpen}
         onClose={() => setIsAddContentOpen(false)}
-      /> */}
+      />
     </>
   );
 }

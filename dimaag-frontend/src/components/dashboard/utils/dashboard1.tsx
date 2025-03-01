@@ -1,30 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Share2, Lock, Globe, Tag } from 'lucide-react';
+import { ChevronRight, Globe, Lock, Share2, Tag } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TopNavigation } from './top-navigation';
-// import { dummyContent } from './data';
 import { Link } from 'react-router-dom';
 import { ShareModal } from './share-modal';
+import { TopNavigation } from './top-navigation';
 
 import { useInfiniteContent } from '@/hooks/useInfinite';
 import { contentType } from '@/types/content';
-// import { dummyContent } from './data';
 
 export default function Design2Dashboard() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedContentId, setSelectedContentId] = useState<string>('');
-  const [dummyContent, setDummyContent] = useState<contentType[]>();
+  const [allContent, setAllContent] = useState<contentType[]>([]);
+
+  // Create refs for infinite scrolling
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const handleShare = (contentId: string) => {
     setSelectedContentId(contentId);
     setShareModalOpen(true);
   };
+
   const {
     content,
     error,
@@ -34,14 +37,40 @@ export default function Design2Dashboard() {
     hasNextPage,
   } = useInfiniteContent();
 
-  if (!content) return <div>Loading</div>;
-
+  // Set up the observer for infinite scrolling
   useEffect(() => {
-    console.log(content);
-    if (content.length > 0) {
-      setDummyContent(content[0].data);
+    if (!loadMoreRef.current) return;
+
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      // Increased threshold and rootMargin for smoother loading
+      { threshold: 0.3, rootMargin: '200px' },
+    );
+
+    observerRef.current.observe(loadMoreRef.current);
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  // Flatten all content from pages for display
+  useEffect(() => {
+    if (content && content.length > 0) {
+      const flattenedContent = content.flatMap((page) => page.data || []);
+      setAllContent(flattenedContent);
     }
   }, [content]);
+
+  if (status === 'pending' && !allContent.length) return <div>Loading</div>;
 
   // Based on the coral theme values
   return (
@@ -56,9 +85,9 @@ export default function Design2Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {dummyContent?.slice(0, 3).map((content, index) => (
+            {allContent.slice(0, 3).map((content, index) => (
               <motion.div
-                key={content.id}
+                key={content.id || `recent-${index}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -145,9 +174,9 @@ export default function Design2Dashboard() {
               },
             }}
           >
-            {dummyContent?.map((content) => (
+            {allContent.map((content, index) => (
               <motion.div
-                key={content.id}
+                key={content.id || `all-${index}`}
                 variants={{
                   hidden: { opacity: 0, x: -20 },
                   visible: { opacity: 1, x: 0 },
@@ -209,6 +238,30 @@ export default function Design2Dashboard() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Loading indicator and intersection observer target */}
+          <div ref={loadMoreRef} className="py-8 mt-4 flex justify-center">
+            {isFetchingNextPage ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin h-5 w-5 border-2 border-[hsl(30,65%,60%)] rounded-full border-t-transparent"></div>
+                <span className="text-[hsl(25,5.3%,44.7%)]">
+                  Loading more...
+                </span>
+              </div>
+            ) : hasNextPage ? (
+              <Button
+                onClick={() => fetchNextPage()}
+                variant="outline"
+                className="border-[hsl(30,65%,60%)] text-[hsl(30,65%,60%)]"
+              >
+                Load More
+              </Button>
+            ) : allContent.length > 0 ? (
+              <span className="text-[hsl(25,5.3%,44.7%)]">
+                No more content to load
+              </span>
+            ) : null}
+          </div>
         </div>
       </main>
 
