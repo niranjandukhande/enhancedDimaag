@@ -11,14 +11,15 @@ import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
 import Brain from './components/explore/brain';
 import ContentDetail from './components/dashboard/ContentDetail';
+import Design2Dashboard from './components/dashboard/utils/dashboard1';
 
 export default function App() {
   return (
-    <div className="bg-[#2F3C7E] pt-1">
+    <div>
       <BrowserRouter>
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <MinimalNavbar />
-        </div>
+        </div> */}
 
         <Routes>
           <Route
@@ -66,6 +67,7 @@ export default function App() {
           <Route path="/explore/:username" element={<Brain />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard1" element={<Design2Dashboard />} />
         </Routes>
       </BrowserRouter>
     </div>
