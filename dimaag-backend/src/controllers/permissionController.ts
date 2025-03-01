@@ -98,12 +98,19 @@ export async function addPermission(req: Request, res: Response) {
   }
 }
 export async function getSharedWithPeople(req: Request, res: Response) {
+  console.log('INSIDE');
   try {
     const userId = req.userId;
+    const { id } = req.params;
     const sharedWithMe = await db
       .select()
       .from(permissionTable)
-      .where(eq(permissionTable.owner, userId))
+      .where(
+        and(
+          eq(permissionTable.owner, userId),
+          eq(permissionTable.contentId, id),
+        ),
+      )
       .execute();
     const users = await db
       .select()
@@ -115,7 +122,7 @@ export async function getSharedWithPeople(req: Request, res: Response) {
         ),
       )
       .execute();
-    res.status(200).json({ data: users });
+    res.status(200).json(users);
   } catch (error) {
     console.error('error while getting shared with people', error);
     res.status(500).json({ message: 'error while getting shared with people' });

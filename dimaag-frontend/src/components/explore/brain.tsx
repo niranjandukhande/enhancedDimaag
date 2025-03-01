@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
-import ContentDisplay from '../dashboard/utils/contentDisplay';
 import ExploreDisplay from '../dashboard/utils/exploreDisplay';
 
 export default function Brain() {

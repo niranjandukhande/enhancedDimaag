@@ -3,12 +3,11 @@
 import type React from 'react';
 
 import { useState } from 'react';
-import { Link2, Loader2 } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';

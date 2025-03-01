@@ -1,28 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Users,
-  Search,
-  Filter,
   ArrowUpDown,
-  User,
-  Mail,
   Calendar,
+  Filter,
+  Mail,
+  Search,
+  User,
+  Users,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { dummyUsers } from '../dashboard/utils/data';
-import { TopNavigation } from '../dashboard/utils/top-navigation';
-import { formatDate } from '@/utils/formatDate';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useUser } from '@/hooks/useUser';
 import { userType } from '@/types/userType';
+import { formatDate } from '@/utils/formatDate';
+import { TopNavigation } from '../dashboard/utils/top-navigation';
 
 export default function ExploreUsers() {
   const [searchQuery, setSearchQuery] = useState('');

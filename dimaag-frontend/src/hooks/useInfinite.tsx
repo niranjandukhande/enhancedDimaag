@@ -1,12 +1,12 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
 import { useAxiosClient } from '@/config/axios';
+import { useContentStore } from '@/stores/contentStore';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useContentStore } from '@/stores/contentStore';
 
 export const useInfiniteContent = () => {
   const api = useAxiosClient();
-  const { setContents, contents } = useContentStore();
+  const { setContents } = useContentStore();
 
   // Fetch function for infinite query
   const fetchItems = async ({ pageParam = 0 }) => {

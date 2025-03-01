@@ -30,7 +30,7 @@ export default function Design2Dashboard() {
 
   const {
     content,
-    error,
+
     status,
     fetchNextPage,
     isFetchingNextPage,
@@ -141,7 +141,7 @@ export default function Design2Dashboard() {
                         size="sm"
                         className="rounded-full border-[hsl(20,5.9%,90%)]"
                       >
-                        <Link to={`/design2/${content.id}`}>
+                        <Link to={`/dashboard/${content.id}`}>
                           View
                           <ChevronRight className="h-4 w-4 ml-1" />
                         </Link>
@@ -230,7 +230,9 @@ export default function Design2Dashboard() {
                         size="sm"
                         className="w-full bg-[hsl(30,65%,60%)] hover:bg-[hsl(30,65%,60%)]/90 text-[hsl(60,9.1%,97.8%)]"
                       >
-                        <Link to={`/design2/${content.id}`}>View Details</Link>
+                        <Link to={`/dashboard/${content.id}`}>
+                          View Details
+                        </Link>
                       </Button>
                     </div>
                   </div>

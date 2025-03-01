@@ -1,18 +1,15 @@
 import Signin from '@/components/auth/signIn';
 import Signup from '@/components/auth/signUp';
 import SSOCallback from '@/components/auth/ssoCallBack';
-import Dashboard from '@/components/dashboard/dashboard';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import ContentDetail from './components/dashboard/ContentDetail';
 import Design2Dashboard from './components/dashboard/utils/dashboard1';
-import Brain from './components/explore/brain';
+import Design2Detail from './components/dashboard/utils/newContentDetails';
+import UserProfileAlt from './components/explore/newBrain';
 import ExploreUsers from './components/explore/newExplore';
 import Home from './components/home';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
-import UserProfileAlt from './components/explore/newBrain';
-import MinimalNavbar from './components/Layout/MinimalNavbar';
 
 export default function App() {
   return (
@@ -43,7 +40,7 @@ export default function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Design2Dashboard />
               </ProtectedRoute>
             }
           />
@@ -59,7 +56,7 @@ export default function App() {
             path="/dashboard/:id"
             element={
               <ProtectedRoute>
-                <ContentDetail />
+                <Design2Detail />
               </ProtectedRoute>
             }
           />
@@ -70,7 +67,6 @@ export default function App() {
           <Route path="/explore/:username" element={<UserProfileAlt />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard1" element={<Design2Dashboard />} />
         </Routes>
       </BrowserRouter>
     </div>

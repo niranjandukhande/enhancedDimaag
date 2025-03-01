@@ -71,12 +71,12 @@ export async function getContent(req: Request, res: Response) {
       .offset(page * PAGE_SIZE)
       .execute();
 
-      const nextPage = content.length === PAGE_SIZE ? page + 1 : undefined;
+    const nextPage = content.length === PAGE_SIZE ? page + 1 : undefined;
 
     res.status(200).json({
       data: content,
       nextPage: nextPage,
-      page: page
+      page: page,
     });
   } catch (err) {
     console.error('Error fetching Content:', err);
@@ -131,5 +131,36 @@ export async function searchContent(req: Request, res: Response) {
       message: 'Internal server error',
       error: error,
     });
+  }
+}
+export async function updateContent(req: Request, res: Response) {
+  const { editedDescription, editedTitle } = req.body;
+  const { id } = req.params;
+  try {
+    const updadatedContent = await db
+      .update(contentTable)
+      .set({
+        title: editedTitle,
+        description: editedDescription,
+      })
+      .where(eq(contentTable.id, id))
+      .returning();
+    res.status(200).json({
+      message: 'success',
+      updadatedContent,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'error', error });
+  }
+}
+export async function getContentById(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const content = await db.query.contentTable.findFirst({
+      where: eq(contentTable.id, id),
+    });
+    res.status(200).json(content);
+  } catch (error) {
+    res.status(500).json({ message: 'error', error });
   }
 }

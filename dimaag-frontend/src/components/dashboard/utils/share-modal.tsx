@@ -13,8 +13,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { contentAccess, dummyUsers } from './data';
+
 import { userType } from '@/types/userType';
+import { useQuery } from '@tanstack/react-query';
+import { useAxiosClient } from '@/config/axios';
+import toast from 'react-hot-toast';
+import { useUser } from '@/hooks/useUser';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -27,13 +31,39 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
   const [sharedUsers, setSharedUsers] = useState<string[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<userType[]>([]);
 
+  const api = useAxiosClient();
+  const users = useUser();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['shared-users', contentId],
+    queryFn: async () => {
+      if (!contentId) return [];
+      const response = await api.get(`/permission/user/${contentId}`);
+      console.log('response', response);
+      return response.data;
+    },
+    staleTime: 60 * 1000 * 10,
+  });
   useEffect(() => {
-    if (contentId && contentAccess[contentId as keyof typeof contentAccess]) {
-      setSharedUsers(contentAccess[contentId as keyof typeof contentAccess]);
-    } else {
-      setSharedUsers([]);
+    if (users) {
+      setFilteredUsers(users);
     }
-  }, [contentId]);
+  }, [data]);
+  useEffect(() => {
+    const toastId = isError ? toast.error('Error while loading content') : null;
+    return () => toast.dismiss(toastId || '');
+  }, [isError]);
+
+  useEffect(() => {
+    const toastId = isLoading ? toast.loading('Loading content...') : null;
+    return () => toast.dismiss(toastId || '');
+  }, [isLoading]);
+  useEffect(() => {
+    if (contentId && data) {
+      console.log('DATA', data);
+      setSharedUsers(data);
+    }
+  }, [contentId, data]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -42,7 +72,7 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
     }
 
     const query = searchQuery.toLowerCase();
-    const filtered = dummyUsers
+    const filtered = filteredUsers
       .filter(
         (user) =>
           user.username.toLowerCase().includes(query) ||
@@ -51,7 +81,7 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
       .filter((user) => !sharedUsers.includes(user.id || ''));
 
     setFilteredUsers(filtered);
-  }, [searchQuery, sharedUsers]);
+  }, [searchQuery]);
 
   const addUser = (userId: string) => {
     if (!sharedUsers.includes(userId)) {
@@ -65,22 +95,48 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
   };
 
   const getUserById = (userId: string) => {
-    return dummyUsers.find((user) => user.id === userId);
+    return filteredUsers.find((user) => user.id === userId);
+  };
+
+  // Coral theme colors converted to specific values
+  const coralColors = {
+    background: 'hsl(30, 50%, 98%)',
+    foreground: 'hsl(20, 14.3%, 4.1%)',
+    secondaryBg: 'hsla(30, 60%, 94%, 0.3)',
+    muted: 'hsl(30, 40%, 96.1%)',
+    mutedForeground: 'hsl(25, 5.3%, 44.7%)',
+    accent: 'hsl(30, 65%, 60%)',
+    accentAlpha: 'hsla(30, 65%, 60%, 0.2)',
+    border: 'hsl(20, 5.9%, 90%)',
+    secondary: 'hsl(30, 60%, 94%)',
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="theme-coral max-w-md">
+      <DialogContent
+        style={{
+          backgroundColor: coralColors.background,
+          color: coralColors.foreground,
+          maxWidth: '28rem', // max-w-md equivalent
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Share Content</DialogTitle>
         </DialogHeader>
 
         <div className="relative mt-2">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search
+            className="absolute left-2.5 top-2.5 h-4 w-4"
+            style={{ color: coralColors.mutedForeground }}
+          />
           <Input
             type="text"
             placeholder="Search people by name or email"
-            className="pl-8 bg-secondary/30 border-accent/20"
+            className="pl-8"
+            style={{
+              backgroundColor: coralColors.secondaryBg,
+              borderColor: coralColors.accentAlpha,
+            }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -92,7 +148,13 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mt-2 max-h-40 overflow-y-auto rounded-md border border-accent/20 bg-background p-1"
+              className="mt-2 max-h-40 overflow-y-auto rounded-md p-1"
+              style={{
+                backgroundColor: coralColors.background,
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor: coralColors.accentAlpha,
+              }}
             >
               {filteredUsers.map((user) => (
                 <motion.div
@@ -100,7 +162,7 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex items-center justify-between p-2 rounded-md hover:bg-secondary cursor-pointer"
+                  className="flex items-center justify-between p-2 rounded-md cursor-pointer"
                   onClick={() => addUser(user.id || '')}
                 >
                   <div className="flex items-center gap-2">
@@ -112,12 +174,18 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium">{user.username}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p
+                        className="text-xs"
+                        style={{ color: coralColors.mutedForeground }}
+                      >
                         {user.email}
                       </p>
                     </div>
                   </div>
-                  <UserPlus className="h-4 w-4 text-accent" />
+                  <UserPlus
+                    className="h-4 w-4"
+                    style={{ color: coralColors.accent }}
+                  />
                 </motion.div>
               ))}
             </motion.div>
@@ -138,7 +206,12 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center justify-between rounded-md border border-accent/20 p-2"
+                    className="flex items-center justify-between rounded-md p-2"
+                    style={{
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: coralColors.accentAlpha,
+                    }}
                   >
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
@@ -149,7 +222,10 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
                       </Avatar>
                       <div>
                         <p className="text-sm font-medium">{user.username}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p
+                          className="text-xs"
+                          style={{ color: coralColors.mutedForeground }}
+                        >
                           {user.email}
                         </p>
                       </div>
@@ -159,13 +235,19 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
                       size="icon"
                       onClick={() => removeUser(user.id || '')}
                     >
-                      <X className="h-4 w-4 text-muted-foreground" />
+                      <X
+                        className="h-4 w-4"
+                        style={{ color: coralColors.mutedForeground }}
+                      />
                     </Button>
                   </motion.div>
                 );
               })
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p
+                className="text-sm"
+                style={{ color: coralColors.mutedForeground }}
+              >
                 No users have access to this content
               </p>
             )}
