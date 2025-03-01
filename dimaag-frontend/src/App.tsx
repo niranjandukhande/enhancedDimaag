@@ -11,6 +11,8 @@ import Home from './components/home';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
+import UserProfileAlt from './components/explore/newBrain';
+import MinimalNavbar from './components/Layout/MinimalNavbar';
 
 export default function App() {
   return (
@@ -63,7 +65,9 @@ export default function App() {
           />
           <Route path="/explore" element={<ExploreUsers />} />
 
-          <Route path="/explore/:username" element={<Brain />} />
+          {/* <Route path="/explore/:username" element={<Brain />} /> */}
+
+          <Route path="/explore/:username" element={<UserProfileAlt />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
           <Route path="/" element={<Home />} />
           <Route path="/dashboard1" element={<Design2Dashboard />} />

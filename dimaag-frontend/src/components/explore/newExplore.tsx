@@ -228,10 +228,7 @@ export default function ExploreUsers() {
                   visible: { opacity: 1, y: 0 },
                 }}
               >
-                <Link
-                  to={`/design2/explore/user/${user.id}`}
-                  className="block h-full"
-                >
+                <Link to={`/explore/${user.username}`} className="block h-full">
                   <Card
                     className="overflow-hidden h-full border-2 transition-all duration-300"
                     style={{
@@ -316,7 +313,7 @@ export default function ExploreUsers() {
                   visible: { opacity: 1, x: 0 },
                 }}
               >
-                <Link to={`/design2/explore/user/${user.id}`} className="block">
+                <Link to={`/explore/${user.username}`} className="block">
                   <Card
                     className="overflow-hidden border transition-all duration-300"
                     style={{
