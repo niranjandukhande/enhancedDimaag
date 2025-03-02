@@ -7,7 +7,7 @@ export const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://enhanced-dimaag.vercel.app/'],
+    origin: ['http://localhost:5173', 'https://enhanced-dimaag.vercel.app'],
     credentials: true,
   }),
 );
