@@ -6,7 +6,7 @@
   "scripts": {
     "format": "npx prettier --write .",
     "dev": "node esbuild.config.js  && nodemon dist/server.js",
-    "build": "node esbuild.config.js --prod",
+    "build": "npm install && node esbuild.config.js --prod",
     "start": "node dist/server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
