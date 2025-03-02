@@ -50,3 +50,21 @@ export async function getAllUsers(req: Request, res: Response) {
       .json({ message: 'Error retrieving user details', error: error });
   }
 }
+
+export async function updateUserDetails(req: Request, res: Response) {
+  const userId = req.userId;
+  const { username, bio } = req.body;
+  try {
+    const updatedUser = await db
+      .update(usersTable)
+      .set({ username: username, bio: bio })
+      .where(eq(usersTable.clerkId, userId))
+      .returning();
+    res.status(200).json({
+      message: 'success',
+      updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'error', error });
+  }
+}

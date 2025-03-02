@@ -2,7 +2,16 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Menu, X, Home, Compass, Bell, Plus } from 'lucide-react';
+import {
+  Search,
+  Menu,
+  X,
+  Home,
+  Compass,
+  Bell,
+  Plus,
+  Brain,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,11 +20,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link, useLocation } from 'react-router-dom';
 import { AddContentModal } from './addModel';
 import { ProfileModalDesign1 } from './profileDesign';
+import { SignOutButton, useUser } from '@clerk/clerk-react';
 // import { AddContentModal } from "@/components/add-content-modal";
 // import { ProfileModalDesign1 } from "./profile-modal-design1";
 
 export function TopNavigation() {
   // const pathname = usePathname();
+
+  const { user } = useUser();
 
   const pathname = useLocation().pathname;
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -42,7 +54,7 @@ export function TopNavigation() {
                 <SheetContent side="left" className="theme-coral">
                   <div className="flex flex-col gap-6 py-6">
                     <Link
-                      to="/design2"
+                      to="/dashboard"
                       className="flex items-center gap-2 text-lg font-semibold text-accent"
                     >
                       <div className="rounded-md bg-accent/10 p-1">
@@ -54,34 +66,29 @@ export function TopNavigation() {
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="h-6 w-6"
+                          className="h-6 w-6 text-black"
                         >
                           <path d="M12 2L2 7l10 5 10-5-10-5z" />
                           <path d="M2 17l10 5 10-5" />
                           <path d="M2 12l10 5 10-5" />
                         </svg>
                       </div>
-                      ContentHub
+                      <span className="text-lg font-semibold  text-black">
+                        enhancedDimaag
+                      </span>
+                      {/* ContentHub */}
                     </Link>
                     <nav className="flex flex-col gap-4">
                       <Link
-                        to="/design2"
-                        className={`flex items-center gap-2 text-base ${
-                          isActive('/design2') && !isActive('/explore')
-                            ? 'font-medium text-accent'
-                            : 'text-muted-foreground'
-                        }`}
+                        to="/dashboard"
+                        className={`flex items-center gap-2 text-base `}
                       >
                         <Home className="h-5 w-5" />
                         Home
                       </Link>
                       <Link
                         to="/explore"
-                        className={`flex items-center gap-2 text-base ${
-                          isActive('/explore')
-                            ? 'font-medium text-accent'
-                            : 'text-muted-foreground'
-                        }`}
+                        className={`flex items-center gap-2 text-base `}
                       >
                         <Compass className="h-5 w-5" />
                         Explore
@@ -91,9 +98,12 @@ export function TopNavigation() {
                 </SheetContent>
               </Sheet>
 
-              <Link to="/design2" className="hidden items-center gap-2 md:flex">
+              <Link
+                to="/dashboard"
+                className="hidden items-center gap-2 md:flex"
+              >
                 <div className="rounded-md bg-accent/10 p-1">
-                  <svg
+                  {/* <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -101,21 +111,22 @@ export function TopNavigation() {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="h-6 w-6 text-accent"
+                    className="h-6 w-6 text-black"
                   >
                     <path d="M12 2L2 7l10 5 10-5-10-5z" />
                     <path d="M2 17l10 5 10-5" />
                     <path d="M2 12l10 5 10-5" />
-                  </svg>
+                  </svg> */}
+                  <Brain />
                 </div>
                 <span className="text-lg font-semibold  text-black">
-                  ContentHub
+                  enhancedDimaag
                 </span>
               </Link>
 
               <nav className="hidden md:flex md:items-center md:gap-6">
                 <Link
-                  to="/explore"
+                  to="/dashboard"
                   className={`relative flex items-center gap-1 text-sm font-medium ${
                     isActive('/design2') && !isActive('/design2/explore-alt')
                       ? 'text-foreground'
@@ -220,9 +231,12 @@ export function TopNavigation() {
                   onClick={() => setIsProfileOpen(true)}
                 >
                   <Avatar className="h-8 w-8 border border-border">
-                    <AvatarImage src="https://i.pravatar.cc/150?img=1" />
+                    <AvatarImage src={user?.imageUrl} />
                     <AvatarFallback>SJ</AvatarFallback>
                   </Avatar>
+                </Button>
+                <Button variant="default" className="text-muted-foreground">
+                  <SignOutButton />
                 </Button>
               </div>
             </div>

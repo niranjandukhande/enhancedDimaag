@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 import { userType } from '@/types/userType';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAxiosClient } from '@/config/axios';
 import toast from 'react-hot-toast';
 import { useUser } from '@/hooks/useUser';
@@ -28,43 +28,89 @@ interface ShareModalProps {
 
 export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sharedUsers, setSharedUsers] = useState<string[]>([]);
+  const [sharedUsers, setSharedUsers] = useState<userType[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<userType[]>([]);
+  const [allUsers, setAllUsers] = useState<userType[]>([]);
 
   const api = useAxiosClient();
   const users = useUser();
+  const queryClient = useQueryClient();
 
+  // Fetch users who already have access
   const { data, isLoading, isError } = useQuery({
     queryKey: ['shared-users', contentId],
     queryFn: async () => {
       if (!contentId) return [];
       const response = await api.get(`/permission/user/${contentId}`);
-      console.log('response', response);
       return response.data;
     },
     staleTime: 60 * 1000 * 10,
   });
+
+  // Add user permission mutation
+  const addPermissionMutation = useMutation({
+    mutationFn: async (sharesWith: string) => {
+      return await api.post(`/permission`, {
+        contentId,
+        sharesWith,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shared-users', contentId] });
+      toast.success('User added successfully');
+    },
+    onError: () => {
+      toast.error('Failed to add user');
+    },
+  });
+
+  // Remove user permission mutation
+  const removePermissionMutation = useMutation({
+    mutationFn: async (sharesWith: string) => {
+      return await api.delete(`/permission`, {
+        data: {
+          contentId,
+          sharesWith,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shared-users', contentId] });
+      toast.success('User removed successfully');
+    },
+    onError: () => {
+      toast.error('Failed to remove user');
+    },
+  });
+
+  // Store all users when they're loaded
   useEffect(() => {
     if (users) {
-      setFilteredUsers(users);
+      setAllUsers(users);
     }
-  }, [data]);
+  }, [users]);
+
+  // Handle loading and error states
   useEffect(() => {
-    const toastId = isError ? toast.error('Error while loading content') : null;
+    const toastId = isError
+      ? toast.error('Error while loading shared users')
+      : null;
     return () => toast.dismiss(toastId || '');
   }, [isError]);
 
   useEffect(() => {
-    const toastId = isLoading ? toast.loading('Loading content...') : null;
+    const toastId = isLoading ? toast.loading('Loading shared users...') : null;
     return () => toast.dismiss(toastId || '');
   }, [isLoading]);
+
+  // Update sharedUsers when data is available
   useEffect(() => {
     if (contentId && data) {
-      console.log('DATA', data);
       setSharedUsers(data);
     }
   }, [contentId, data]);
 
+  // Filter users based on search query
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setFilteredUsers([]);
@@ -72,30 +118,53 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
     }
 
     const query = searchQuery.toLowerCase();
-    const filtered = filteredUsers
+    const filtered = allUsers
       .filter(
         (user) =>
           user.username.toLowerCase().includes(query) ||
           user.email.toLowerCase().includes(query),
       )
-      .filter((user) => !sharedUsers.includes(user.id || ''));
+      .filter(
+        (user) =>
+          !sharedUsers.some(
+            (sharedUser) => sharedUser.clerkId === user.clerkId,
+          ),
+      );
 
     setFilteredUsers(filtered);
-  }, [searchQuery]);
+  }, [searchQuery, allUsers, sharedUsers]);
 
-  const addUser = (userId: string) => {
-    if (!sharedUsers.includes(userId)) {
-      setSharedUsers([...sharedUsers, userId]);
+  const addUser = (user: userType) => {
+    if (!user.clerkId) {
+      toast.error('User ID not found');
+      return;
+    }
+
+    // Make backend call to add permission
+    addPermissionMutation.mutate(user.clerkId);
+
+    // Optimistically update UI
+    if (
+      !sharedUsers.some((sharedUser) => sharedUser.clerkId === user.clerkId)
+    ) {
+      setSharedUsers([...sharedUsers, user]);
     }
     setSearchQuery('');
   };
 
-  const removeUser = (userId: string) => {
-    setSharedUsers(sharedUsers.filter((id) => id !== userId));
-  };
+  const removeUser = (user: userType) => {
+    if (!user.clerkId) {
+      toast.error('User ID not found');
+      return;
+    }
 
-  const getUserById = (userId: string) => {
-    return filteredUsers.find((user) => user.id === userId);
+    // Make backend call to remove permission
+    removePermissionMutation.mutate(user.clerkId);
+
+    // Optimistically update UI
+    setSharedUsers(
+      sharedUsers.filter((sharedUser) => sharedUser.clerkId !== user.clerkId),
+    );
   };
 
   // Coral theme colors converted to specific values
@@ -158,12 +227,12 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
             >
               {filteredUsers.map((user) => (
                 <motion.div
-                  key={user.id}
+                  key={user.clerkId}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex items-center justify-between p-2 rounded-md cursor-pointer"
-                  onClick={() => addUser(user.id || '')}
+                  className="flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100"
+                  onClick={() => addUser(user)}
                 >
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
@@ -192,26 +261,30 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
           )}
         </AnimatePresence>
 
-        <div className="mt-4">
-          <h4 className="mb-2 text-sm font-medium">People with access</h4>
-          <div className="space-y-2">
-            {sharedUsers.length > 0 ? (
-              sharedUsers.map((userId) => {
-                const user = getUserById(userId);
-                if (!user) return null;
-
-                return (
+        {searchQuery.trim() === '' && allUsers.length > 0 && (
+          <div className="mt-2">
+            <p className="text-sm font-medium mb-2">Suggested people</p>
+            <div className="space-y-2">
+              {allUsers
+                .filter(
+                  (user) =>
+                    !sharedUsers.some(
+                      (sharedUser) => sharedUser.clerkId === user.clerkId,
+                    ),
+                )
+                .slice(0, 3) // Show only 3 random users
+                .map((user) => (
                   <motion.div
-                    key={user.id}
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center justify-between rounded-md p-2"
+                    key={user.clerkId}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100"
                     style={{
                       borderWidth: '1px',
                       borderStyle: 'solid',
                       borderColor: coralColors.accentAlpha,
                     }}
+                    onClick={() => addUser(user)}
                   >
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
@@ -230,19 +303,62 @@ export function ShareModal({ isOpen, onClose, contentId }: ShareModalProps) {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeUser(user.id || '')}
-                    >
-                      <X
-                        className="h-4 w-4"
-                        style={{ color: coralColors.mutedForeground }}
-                      />
-                    </Button>
+                    <UserPlus
+                      className="h-4 w-4"
+                      style={{ color: coralColors.accent }}
+                    />
                   </motion.div>
-                );
-              })
+                ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-4">
+          <h4 className="mb-2 text-sm font-medium">People with access</h4>
+          <div className="space-y-2">
+            {sharedUsers.length > 0 ? (
+              sharedUsers.map((user) => (
+                <motion.div
+                  key={user.clerkId}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="flex items-center justify-between rounded-md p-2"
+                  style={{
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: coralColors.accentAlpha,
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.imageUrl} alt={user.username} />
+                      <AvatarFallback>
+                        {user.username.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium">{user.username}</p>
+                      <p
+                        className="text-xs"
+                        style={{ color: coralColors.mutedForeground }}
+                      >
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeUser(user)}
+                  >
+                    <X
+                      className="h-4 w-4"
+                      style={{ color: coralColors.mutedForeground }}
+                    />
+                  </Button>
+                </motion.div>
+              ))
             ) : (
               <p
                 className="text-sm"

@@ -263,12 +263,12 @@ export default function UserProfileAlt() {
                           <p className="text-[hsl(25,5.3%,44.7%)] text-sm mb-4 line-clamp-2">
                             {content.description}
                           </p>
-                          <Button
+                          {/* <Button
                             asChild
                             className="w-full bg-[hsl(30,65%,60%)] hover:bg-[hsl(30,65%,60%)]/90 text-[hsl(60,9.1%,97.8%)]"
                           >
                             <a href={`/design2/${content.id}`}>View Content</a>
-                          </Button>
+                          </Button> */}
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -325,14 +325,14 @@ export default function UserProfileAlt() {
                               <p className="text-[hsl(25,5.3%,44.7%)] mb-4">
                                 {content.description}
                               </p>
-                              <Button
+                              {/* <Button
                                 asChild
                                 className="bg-[hsl(30,65%,60%)] hover:bg-[hsl(30,65%,60%)]/90 text-[hsl(60,9.1%,97.8%)]"
                               >
                                 <a href={`/design2/${content.id}`}>
                                   View Content
                                 </a>
-                              </Button>
+                              </Button> */}
                             </div>
                           </div>
                         </CardContent>
