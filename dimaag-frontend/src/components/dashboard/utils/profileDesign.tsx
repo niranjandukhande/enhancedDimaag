@@ -2,10 +2,12 @@
 
 import type React from 'react';
 
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Camera, Loader2, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Check, Loader2, Mail } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,12 +15,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { formatDate } from '@/utils/formatDate';
 import { useAxiosClient } from '@/config/axios';
-import { DialogClose } from '@radix-ui/react-dialog';
+import { formatDate } from '@/utils/formatDate';
 
 interface ProfileModalProps {
   isOpen: boolean;
