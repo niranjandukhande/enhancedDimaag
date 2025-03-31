@@ -9,7 +9,7 @@ import express from 'express';
 
 const router = express.Router();
 router.use(clerkMiddleware());
-router.get('/all', getAllUsers);
+router.get('/all', verifyClerkSession, getAllUsers);
 router.get('/', verifyClerkSession, getUserDetails);
 router.put('/update', verifyClerkSession, updateUserDetails);
 // router.post('/test', test);

@@ -20,6 +20,7 @@ export async function getUserDetails(req: Request, res: Response) {
 export async function getAllUsers(req: Request, res: Response) {
   try {
     const userId = req.userId;
+    console.log(userId);
 
     if (userId) {
       const response = await db
