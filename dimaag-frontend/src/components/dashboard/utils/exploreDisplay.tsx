@@ -104,6 +104,7 @@ export default function ExploreDisplay({
     link: '',
     summary: '',
   });
+  console.log('inside explore display');
 
   // Handle opening the modal
   const handleOpenModal = (item: (typeof mockData)[0]) => {

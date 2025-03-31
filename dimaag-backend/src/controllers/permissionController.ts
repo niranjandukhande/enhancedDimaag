@@ -8,7 +8,8 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { Request, Response } from 'express';
 
 export async function getContentWithPermission(req: Request, res: Response) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userId = req.userId;
+  console.log(userId);
   const { username } = req.params;
 
   try {
@@ -28,23 +29,16 @@ export async function getContentWithPermission(req: Request, res: Response) {
         ),
       )
       .execute();
-
-    if (!token) {
-      res.status(200).json({ data: publicContent });
-    }
-    const isVerified = await isVerifiedWithClerk(token);
-    if (!isVerified) {
-      console.warn('token is not verified');
-      res.status(200).json({ data: publicContent });
-    }
-    if (isVerified) {
+    console.log(publicContent);
+    if (userId) {
+      console.log(userId);
       const contentIds = await db
         .select()
         .from(permissionTable)
         .where(
           and(
             eq(permissionTable.owner, user!.clerkId),
-            eq(permissionTable.sharesWith, isVerified.sub),
+            eq(permissionTable.sharesWith, userId),
           ),
         );
       if (!contentIds) res.status(200).json({ data: publicContent });
@@ -61,7 +55,7 @@ export async function getContentWithPermission(req: Request, res: Response) {
           ),
         )
         .execute();
-      // console.log('contentArray', contentArray);
+      console.log('contentArray', contentArray);
       const finalContent = publicContent.concat(contentArray);
 
       res.status(200).json({ data: finalContent });

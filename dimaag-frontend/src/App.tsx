@@ -10,6 +10,8 @@ import Home from './components/home';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
+import { useState } from 'react';
+import { useUser } from '@clerk/clerk-react';
 
 export default function App() {
   return (
@@ -66,7 +68,7 @@ export default function App() {
 
           <Route path="/explore/:username" element={<UserProfileAlt />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Signin />} />
         </Routes>
       </BrowserRouter>
     </div>

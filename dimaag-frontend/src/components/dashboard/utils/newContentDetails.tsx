@@ -117,6 +117,7 @@ export default function Design2Detail() {
       console.log('NEW CONTENT', currentContent);
     }
   };
+
   const { user } = useUser();
 
   const handleCancel = () => {

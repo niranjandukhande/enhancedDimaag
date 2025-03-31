@@ -2,8 +2,9 @@
 import EmailComponent from '@/components/auth/utils/emailComponent';
 import { OtpComponent } from '@/components/auth/utils/otpComponent';
 import PasswordComponent from '@/components/auth/utils/passwordComponent';
-import { useSignIn } from '@clerk/clerk-react';
+import { useAuth, useSignIn } from '@clerk/clerk-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type Strategy = 'email' | 'password' | 'otp';
 export default function SignIn() {
@@ -12,6 +13,13 @@ export default function SignIn() {
 
   const [strategy, setStrategy] = useState<Strategy>('email');
   const [error, setError] = useState('');
+
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  if (isSignedIn) {
+    navigate('/dashboard');
+  }
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;

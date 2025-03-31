@@ -147,7 +147,7 @@ export default function SignUpComponent() {
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
             <Link
-              to="/login"
+              to="/signin"
               className="text-blue-600 hover:underline font-medium"
             >
               Log in

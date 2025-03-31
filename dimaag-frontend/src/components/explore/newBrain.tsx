@@ -46,10 +46,11 @@ export default function UserProfileAlt() {
     queryKey: ['brain', username],
     queryFn: async () => {
       const res = await api.get(`/permission/${username}`);
+      console.log('result: ', res.data);
       return res.data;
     },
     staleTime: 1000 * 60,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
   useEffect(() => {
     const toastId = isError ? toast.error('Error while loading content') : null;
