@@ -1,5 +1,5 @@
-import { isVerifiedWithClerk } from '@/helpers/isVerifiedWithClerk';
-import { verifyToken } from '@clerk/express';
+import { getAuth } from '@clerk/express';
+
 import { NextFunction, Request, Response } from 'express';
 
 export async function verifyClerkSession(
@@ -7,24 +7,15 @@ export async function verifyClerkSession(
   res: Response,
   next: NextFunction,
 ) {
-  try {
-    console.log('verifying clerk session');
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      throw new Error('NO TOKEN PROVIDED');
-    }
+  const response = getAuth(req);
 
-    const isAuthenticated = await isVerifiedWithClerk(token);
-    if (isAuthenticated) {
-      req.userId = isAuthenticated.sub;
-      req.sessionId = isAuthenticated.sid;
-    } else {
-      res.status(401).json({ message: 'INVALID TOKEN' });
-    }
+  console.log('verifying clerk session');
 
+  if (response.userId && response.sessionId) {
+    req.userId = response.userId;
+    req.sessionId = response.sessionId;
     next();
-  } catch (error) {
-    console.log(error);
-    res.status(401).json({ message: 'NO TOKEN PROVIDED' });
+  } else {
+    res.status(401).json({ message: 'INVALID TOKEN' });
   }
 }

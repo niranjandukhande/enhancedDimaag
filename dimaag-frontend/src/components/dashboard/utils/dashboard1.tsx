@@ -11,8 +11,10 @@ import { Link } from 'react-router-dom';
 import { ShareModal } from './share-modal';
 import { TopNavigation } from './top-navigation';
 
+import { useAxiosClient } from '@/config/axios';
 import { useInfiniteContent } from '@/hooks/useInfinite';
 import { contentType } from '@/types/content';
+import toast from 'react-hot-toast';
 
 export default function Design2Dashboard() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -21,8 +23,24 @@ export default function Design2Dashboard() {
 
   // Create refs for infinite scrolling
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const api = useAxiosClient();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const handleDelete = (contentId: string) => {
+    api
+      .delete(`/content/${contentId}`)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success('Content deleted successfully');
+          setAllContent(allContent.filter((item) => item.id !== contentId));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('Error deleting content');
+      });
 
+    setSelectedContentId(contentId);
+  };
   const handleShare = (contentId: string) => {
     setSelectedContentId(contentId);
     setShareModalOpen(true);
@@ -233,6 +251,15 @@ export default function Design2Dashboard() {
                         <Link to={`/dashboard/${content.id}`}>
                           View Details
                         </Link>
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(content.id || '')}
+                        className="text-[hsl(25,5.3%,44.7%)]"
+                      >
+                        <Share2 className="h-4 w-4 mr-1" />
+                        Delete
                       </Button>
                     </div>
                   </div>

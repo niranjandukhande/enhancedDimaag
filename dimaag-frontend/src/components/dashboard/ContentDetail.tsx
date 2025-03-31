@@ -33,7 +33,6 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 
-// // Mock data
 // const users = [
 //   {
 //     id: 1,

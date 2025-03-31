@@ -6,10 +6,11 @@ import {
   updateUserDetails,
 } from '@/controllers/userController';
 import { verify } from 'crypto';
+import { clerkMiddleware } from '@clerk/express';
 
 const router = express.Router();
-router.get('/', verifyClerkSession, getUserDetails);
 router.get('/all', getAllUsers);
+router.get('/', clerkMiddleware(), verifyClerkSession, getUserDetails);
 router.put('/update', verifyClerkSession, updateUserDetails);
 router.post('/test', test);
 export default router;

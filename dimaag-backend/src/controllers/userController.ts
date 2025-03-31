@@ -1,21 +1,22 @@
-import { Request, Response } from 'express';
 import { db } from '@/config/database';
+import { isVerifiedWithClerk } from '@/helpers/isVerifiedWithClerk';
+import { tryCatch } from '@/helpers/try-catch';
 import { usersTable } from '@/models/userModel';
 import { eq, ne } from 'drizzle-orm';
-import { isVerifiedWithClerk } from '@/helpers/isVerifiedWithClerk';
+import { Request, Response } from 'express';
 
 export async function getUserDetails(req: Request, res: Response) {
-  try {
-    const user = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.clerkId, req.userId));
-
-    res.status(200).json(user[0]);
-  } catch (error) {
-    console.warn(error);
-    res.status(500).json({ message: 'Error retrieving user details' });
+  const { data: user, error: userError } = await tryCatch(
+    db.select().from(usersTable).where(eq(usersTable.clerkId, req.userId)),
+  );
+  if (userError) {
+    res
+      .status(500)
+      .json({ message: 'Error retrieving user details', error: userError });
+    return;
   }
+
+  res.status(200).json(user[0]);
 }
 export async function getAllUsers(req: Request, res: Response) {
   try {
@@ -45,6 +46,7 @@ export async function getAllUsers(req: Request, res: Response) {
     }
   } catch (error) {
     console.error('Error retrieving user details:', error);
+
     res
       .status(500)
       .json({ message: 'Error retrieving user details', error: error });

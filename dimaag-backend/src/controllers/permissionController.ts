@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 export async function getContentWithPermission(req: Request, res: Response) {
   const token = req.headers.authorization?.split(' ')[1];
   const { username } = req.params;
-  //this username used to get content of this username
+
   try {
     const user = await db.query.usersTable
       .findFirst({ where: eq(usersTable.username, username) })
