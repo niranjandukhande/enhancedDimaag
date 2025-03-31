@@ -6,12 +6,9 @@ import Design2Dashboard from './components/dashboard/utils/dashboard1';
 import Design2Detail from './components/dashboard/utils/newContentDetails';
 import UserProfileAlt from './components/explore/newBrain';
 import ExploreUsers from './components/explore/newExplore';
-import Home from './components/home';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
-import { useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
 
 export default function App() {
   return (
