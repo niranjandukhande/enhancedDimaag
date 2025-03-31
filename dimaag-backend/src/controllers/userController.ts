@@ -1,5 +1,4 @@
 import { db } from '@/config/database';
-import { isVerifiedWithClerk } from '@/helpers/isVerifiedWithClerk';
 import { tryCatch } from '@/helpers/try-catch';
 import { usersTable } from '@/models/userModel';
 import { eq, ne } from 'drizzle-orm';
@@ -20,14 +19,7 @@ export async function getUserDetails(req: Request, res: Response) {
 }
 export async function getAllUsers(req: Request, res: Response) {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    let userId;
-
-    const isVerified = token ? await isVerifiedWithClerk(token) : null;
-
-    if (isVerified) {
-      userId = isVerified.sub;
-    }
+    const userId = req.userId;
 
     if (userId) {
       const response = await db

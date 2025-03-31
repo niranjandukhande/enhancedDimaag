@@ -33,48 +33,6 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 
-// const users = [
-//   {
-//     id: 1,
-//     username: 'Alice Cooper',
-//     email: 'alice@example.com',
-//     imageUrl: '/placeholder.svg',
-//   },
-//   {
-//     id: 2,
-//     username: 'Bob Wilson',
-//     email: 'bob@example.com',
-//     imageUrl: '/placeholder.svg',
-//   },
-//   {
-//     id: 3,
-//     username: 'Carol Smith',
-//     email: 'carol@example.com',
-//     imageUrl: '/placeholder.svg',
-//   },
-//   {
-//     id: 4,
-//     username: 'David Brown',
-//     email: 'david@example.com',
-//     imageUrl: '/placeholder.svg',
-//   },
-//   {
-//     id: 5,
-//     username: 'Eve Johnson',
-//     email: 'eve@example.com',
-//     imageUrl: '/placeholder.svg',
-//   },
-// ];
-
-// const sharedWith = [
-//   {
-//     id: 1,
-//     name: 'Alice Cooper',
-//     email: 'alice@example.com',
-//     avatar: '/placeholder.svg',
-//   },
-// ];
-
 export default function ContentDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
