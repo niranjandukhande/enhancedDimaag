@@ -9,6 +9,7 @@ import ExploreUsers from './components/explore/newExplore';
 import Profile from './components/profile/profile';
 import { ProtectedRoute } from './middleware/protected';
 import { PublicRoute } from './middleware/public';
+import LandingPage from './components/explore/landing';
 
 export default function App() {
   return (
@@ -65,7 +66,8 @@ export default function App() {
 
           <Route path="/explore/:username" element={<UserProfileAlt />} />
           <Route path="/ssocallback" element={<SSOCallback />} />
-          <Route path="/" element={<Signin />} />
+          {/* <Route path="/" element={<Signin />} /> */}
+          <Route path="/" element={<LandingPage />} />
         </Routes>
       </BrowserRouter>
     </div>
