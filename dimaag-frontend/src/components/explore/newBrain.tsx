@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { userType } from '@/types/userType';
@@ -29,6 +30,65 @@ import { useQuery } from '@tanstack/react-query';
 import { TopNavigation } from '../dashboard/utils/top-navigation';
 import { formatDate } from '@/utils/formatDate';
 import { useUser } from '@/hooks/useUser';
+
+function UserProfileSkeleton() {
+  return (
+    <div className="min-h-screen bg-[hsl(30,50%,98%)] text-[hsl(20,14.3%,4.1%)]">
+      <TopNavigation />
+      <main className="container mx-auto px-4 py-8">
+        <Skeleton className="h-9 w-36 mb-6 rounded-md" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Profile card skeleton */}
+          <div className="lg:col-span-4">
+            <div className="rounded-xl border-2 border-[hsl(20,5.9%,90%)] overflow-hidden bg-white">
+              <Skeleton className="h-32 w-full" />
+              <div className="px-6 pb-6 -mt-16 flex flex-col items-center">
+                <Skeleton className="h-32 w-32 rounded-full border-4 border-[hsl(30,50%,98%)]" />
+                <Skeleton className="h-7 w-36 mt-4" />
+                <Skeleton className="h-4 w-48 mt-2 mb-4" />
+                <div className="w-full space-y-3 pt-4 border-t border-[hsl(20,5.9%,90%)] mt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-5/6" />
+                  <Skeleton className="h-4 w-2/3 mt-4" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content area skeleton */}
+          <div className="lg:col-span-8">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <Skeleton className="h-5 w-5 rounded" />
+                <Skeleton className="h-6 w-48" />
+              </div>
+              <Skeleton className="h-9 w-20 rounded-md" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-xl border border-[hsl(20,5.9%,90%)] overflow-hidden">
+                  <Skeleton className="aspect-video w-full" />
+                  <div className="p-4 space-y-2">
+                    <div className="flex gap-2">
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                    </div>
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
 
 export default function UserProfileAlt() {
   const [user, setUser] = useState<userType>();
@@ -58,11 +118,6 @@ export default function UserProfileAlt() {
   }, [isError]);
 
   useEffect(() => {
-    const toastId = isLoading ? toast.loading('Loading content...') : null;
-    return () => toast.dismiss(toastId || '');
-  }, [isLoading]);
-
-  useEffect(() => {
     if (data) {
       setContent(data.data);
     }
@@ -81,16 +136,7 @@ export default function UserProfileAlt() {
   }, [users]);
 
   if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[hsl(30,50%,98%)] text-[hsl(20,14.3%,4.1%)]">
-        <div className="animate-pulse text-center">
-          <div className="rounded-full h-12 w-12 bg-[hsl(30,65%,60%)]/50 mx-auto mb-4"></div>
-          <p className="text-lg text-[hsl(25,5.3%,44.7%)]">
-            Loading user profile...
-          </p>
-        </div>
-      </div>
-    );
+    return <UserProfileSkeleton />;
   }
 
   const getYouTubeVideoId = (url: string) => {
@@ -264,12 +310,6 @@ export default function UserProfileAlt() {
                           <p className="text-[hsl(25,5.3%,44.7%)] text-sm mb-4 line-clamp-2">
                             {content.description}
                           </p>
-                          {/* <Button
-                            asChild
-                            className="w-full bg-[hsl(30,65%,60%)] hover:bg-[hsl(30,65%,60%)]/90 text-[hsl(60,9.1%,97.8%)]"
-                          >
-                            <a href={`/design2/${content.id}`}>View Content</a>
-                          </Button> */}
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -326,14 +366,6 @@ export default function UserProfileAlt() {
                               <p className="text-[hsl(25,5.3%,44.7%)] mb-4">
                                 {content.description}
                               </p>
-                              {/* <Button
-                                asChild
-                                className="bg-[hsl(30,65%,60%)] hover:bg-[hsl(30,65%,60%)]/90 text-[hsl(60,9.1%,97.8%)]"
-                              >
-                                <a href={`/design2/${content.id}`}>
-                                  View Content
-                                </a>
-                              </Button> */}
                             </div>
                           </div>
                         </CardContent>

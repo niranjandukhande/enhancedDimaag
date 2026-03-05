@@ -26,11 +26,6 @@ export const useUser = () => {
   }, [isError]);
 
   useEffect(() => {
-    const toastId = isLoading ? toast.loading('Loading content...') : null;
-    return () => toast.dismiss(toastId || '');
-  }, [isLoading]);
-
-  useEffect(() => {
     if (data) {
       setUsers(data.data);
       console.log('sfasfasfasfs');

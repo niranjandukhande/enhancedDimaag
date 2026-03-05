@@ -43,12 +43,6 @@ export const useInfiniteContent = () => {
     return () => toast.dismiss(toastId || '');
   }, [error]);
 
-  useEffect(() => {
-    const toastId =
-      status === 'pending' ? toast.loading('Loading content...') : null;
-    return () => toast.dismiss(toastId || '');
-  }, [status]);
-
   // Flatten pages data for easier consumption if needed
   const flattenedContent = data?.pages.flatMap((page) => page.data) || [];
 

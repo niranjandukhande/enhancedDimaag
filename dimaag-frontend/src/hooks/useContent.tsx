@@ -30,11 +30,6 @@ export const useContent = (pageNumber?: Number) => {
   }, [isError]);
 
   useEffect(() => {
-    const toastId = isLoading ? toast.loading('Loading content...') : null;
-    return () => toast.dismiss(toastId || '');
-  }, [isLoading]);
-
-  useEffect(() => {
     if (data) {
       setContents(data.data);
     }

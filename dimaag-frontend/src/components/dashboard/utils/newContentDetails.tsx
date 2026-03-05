@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAxiosClient } from '@/config/axios';
 import { contentType } from '@/types/content';
 import { formatDate } from '@/utils/formatDate';
@@ -29,6 +30,100 @@ import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ShareModal } from './share-modal';
 import { TopNavigation } from './top-navigation';
+
+const colors = {
+  background: 'hsl(30 50% 98%)',
+  foreground: 'hsl(20 14.3% 4.1%)',
+  card: 'hsl(0 0% 100%)',
+  cardForeground: 'hsl(20 14.3% 4.1%)',
+  primary: 'hsl(12 91% 55%)',
+  primaryForeground: 'hsl(60 9.1% 97.8%)',
+  secondary: 'hsl(30 60% 94%)',
+  secondaryForeground: 'hsl(24 9.8% 10%)',
+  muted: 'hsl(30 40% 96.1%)',
+  mutedForeground: 'hsl(25 5.3% 44.7%)',
+  accent: 'hsl(30 65% 60%)',
+  accentForeground: 'hsl(60 9.1% 97.8%)',
+  destructive: 'hsl(0 72.2% 50.6%)',
+  destructiveForeground: 'hsl(60 9.1% 97.8%)',
+  border: 'hsl(20 5.9% 90%)',
+  input: 'hsl(20 5.9% 90%)',
+  ring: 'hsl(12 91% 55%)',
+};
+
+function ContentDetailSkeleton() {
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
+      <TopNavigation />
+      <div className="container mx-auto px-4 py-6">
+        {/* Back button */}
+        <Skeleton className="h-9 w-40 mb-6 rounded-md" />
+
+        {/* Badge + action buttons row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-5 w-20 rounded-full" />
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-8 w-20 rounded-md" />
+            <Skeleton className="h-8 w-16 rounded-md" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <Skeleton className="h-10 w-2/3 mb-4" />
+
+        {/* Author row */}
+        <div className="flex items-center gap-3 mb-6">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+
+        {/* Description */}
+        <Skeleton className="h-5 w-full mb-2" />
+        <Skeleton className="h-5 w-4/5 mb-6" />
+
+        {/* Video + summary grid */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Video card */}
+          <div className="lg:col-span-2">
+            <div
+              className="rounded-xl border-2 overflow-hidden"
+              style={{ borderColor: colors.border, backgroundColor: colors.card }}
+            >
+              <Skeleton className="aspect-video w-full" />
+              <div
+                className="p-4 border-t flex items-center justify-between"
+                style={{ borderColor: colors.border }}
+              >
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-28" />
+              </div>
+            </div>
+          </div>
+
+          {/* Summary card */}
+          <div className="space-y-6">
+            <div
+              className="rounded-xl border-2 overflow-hidden"
+              style={{ borderColor: colors.border, backgroundColor: colors.card }}
+            >
+              <div className="p-6 pb-3">
+                <Skeleton className="h-6 w-36 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-5/6 mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Design2Detail() {
   const params = useParams();
@@ -59,35 +154,11 @@ export default function Design2Detail() {
   }, [isError]);
 
   useEffect(() => {
-    const toastId = isLoading ? toast.loading('Loading content...') : null;
-    return () => toast.dismiss(toastId || '');
-  }, [isLoading]);
-
-  useEffect(() => {
     if (content) {
       console.log('content', content);
       setCurrentContent(content);
     }
   }, [content, setCurrentContent]);
-  const colors = {
-    background: 'hsl(30 50% 98%)',
-    foreground: 'hsl(20 14.3% 4.1%)',
-    card: 'hsl(0 0% 100%)',
-    cardForeground: 'hsl(20 14.3% 4.1%)',
-    primary: 'hsl(12 91% 55%)',
-    primaryForeground: 'hsl(60 9.1% 97.8%)',
-    secondary: 'hsl(30 60% 94%)',
-    secondaryForeground: 'hsl(24 9.8% 10%)',
-    muted: 'hsl(30 40% 96.1%)',
-    mutedForeground: 'hsl(25 5.3% 44.7%)',
-    accent: 'hsl(30 65% 60%)',
-    accentForeground: 'hsl(60 9.1% 97.8%)',
-    destructive: 'hsl(0 72.2% 50.6%)',
-    destructiveForeground: 'hsl(60 9.1% 97.8%)',
-    border: 'hsl(20 5.9% 90%)',
-    input: 'hsl(20 5.9% 90%)',
-    ring: 'hsl(12 91% 55%)',
-  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -143,24 +214,11 @@ export default function Design2Detail() {
     const videoId = getYouTubeVideoId(url);
     return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
   };
-  if (!content) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: colors.background }}
-      >
-        <div className="animate-pulse text-center">
-          <div
-            className="rounded-full h-12 w-12 mx-auto mb-4"
-            style={{ backgroundColor: `${colors.accent}80` }}
-          ></div>
-          <p className="text-lg" style={{ color: colors.mutedForeground }}>
-            Loading content...
-          </p>
-        </div>
-      </div>
-    );
+
+  if (isLoading || !content) {
+    return <ContentDetailSkeleton />;
   }
+
   return (
     <div
       className="min-h-screen"

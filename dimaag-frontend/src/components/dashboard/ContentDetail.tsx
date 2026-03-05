@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Sidebar,
   SidebarContent,
@@ -32,6 +33,74 @@ import { Search, Share2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+
+function ContentDetailSkeleton() {
+  return (
+    <SidebarProvider>
+      <div className="flex h-screen bg-background">
+        <Sidebar>
+          <SidebarHeader>
+            <Skeleton className="h-7 w-40 mx-4 my-2" />
+          </SidebarHeader>
+          <SidebarContent className="p-4 space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-9 w-full rounded-md" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-[150px] w-full rounded-md" />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-8 w-20 rounded-md" />
+              </div>
+              {[0, 1].map((i) => (
+                <div key={i} className="flex items-center gap-2 p-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <div className="flex-1 space-y-1">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SidebarContent>
+        </Sidebar>
+
+        <SidebarInset className="flex flex-col">
+          <header className="flex items-center h-14 px-4 border-b">
+            <Skeleton className="h-8 w-8 rounded-md mr-4" />
+            <Skeleton className="h-6 w-36" />
+          </header>
+          <main className="flex-1 p-6 overflow-auto">
+            <div className="grid grid-cols-2 gap-6 max-w-6xl mx-auto">
+              <div className="space-y-4">
+                <Skeleton className="aspect-video w-full rounded-lg" />
+              </div>
+              <div className="space-y-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-4/5" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </div>
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
+  );
+}
 
 export default function ContentDetail() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -116,10 +185,6 @@ export default function ContentDetail() {
     return () => toast.dismiss(toastId || '');
   }, [isError]);
   useEffect(() => {
-    const toastId = isLoading2 ? toast.loading('Loading content...') : null;
-    return () => toast.dismiss(toastId || '');
-  }, [isLoading2]);
-  useEffect(() => {
     if (users) {
       setUserWithoutPermission(
         users.filter(
@@ -177,11 +242,7 @@ export default function ContentDetail() {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <p>Loading...</p>
-      </div>
-    );
+    return <ContentDetailSkeleton />;
   }
   const handleRemove = async (clerkId: string | null) => {
     console.log('clerkId', clerkId);

@@ -18,10 +18,78 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/hooks/useUser';
 import { userType } from '@/types/userType';
 import { formatDate } from '@/utils/formatDate';
 import { TopNavigation } from '../dashboard/utils/top-navigation';
+
+const colors = {
+  background: 'hsl(30 50% 98%)',
+  foreground: 'hsl(20 14.3% 4.1%)',
+  card: 'hsl(0 0% 100%)',
+  cardForeground: 'hsl(20 14.3% 4.1%)',
+  primary: 'hsl(12 91% 55%)',
+  primaryForeground: 'hsl(60 9.1% 97.8%)',
+  secondary: 'hsl(30 60% 94%)',
+  secondaryForeground: 'hsl(24 9.8% 10%)',
+  muted: 'hsl(30 40% 96.1%)',
+  mutedForeground: 'hsl(25 5.3% 44.7%)',
+  accent: 'hsl(30 65% 60%)',
+  accentForeground: 'hsl(60 9.1% 97.8%)',
+  destructive: 'hsl(0 72.2% 50.6%)',
+  destructiveForeground: 'hsl(60 9.1% 97.8%)',
+  border: 'hsl(20 5.9% 90%)',
+  input: 'hsl(20 5.9% 90%)',
+  ring: 'hsl(12 91% 55%)',
+};
+
+function ExploreUsersSkeleton() {
+  return (
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: colors.background, color: colors.foreground }}
+    >
+      <TopNavigation />
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center space-x-2 mb-6">
+          <Skeleton className="h-6 w-6 rounded" />
+          <Skeleton className="h-9 w-40" />
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <Skeleton className="h-10 flex-1 rounded-md" />
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-24 rounded-md" />
+            <Skeleton className="h-10 w-28 rounded-md" />
+            <Skeleton className="h-10 w-20 rounded-md" />
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl border overflow-hidden p-4"
+              style={{ borderColor: colors.border }}
+            >
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-16 w-16 rounded-full shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-36" />
+                  <div className="flex gap-3">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+                <Skeleton className="h-9 w-28 rounded-md shrink-0" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
 
 export default function ExploreUsers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,9 +102,11 @@ export default function ExploreUsers() {
       setDummyUsers(users);
     }
   }, [users]);
+
   if (dummyUsers.length === 0) {
-    return <div>Loading</div>;
+    return <ExploreUsersSkeleton />;
   }
+
   const filteredUsers = dummyUsers
     .filter(
       (user) =>
@@ -54,27 +124,6 @@ export default function ExploreUsers() {
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  // Coral theme colors
-  const colors = {
-    background: 'hsl(30 50% 98%)',
-    foreground: 'hsl(20 14.3% 4.1%)',
-    card: 'hsl(0 0% 100%)',
-    cardForeground: 'hsl(20 14.3% 4.1%)',
-    primary: 'hsl(12 91% 55%)',
-    primaryForeground: 'hsl(60 9.1% 97.8%)',
-    secondary: 'hsl(30 60% 94%)',
-    secondaryForeground: 'hsl(24 9.8% 10%)',
-    muted: 'hsl(30 40% 96.1%)',
-    mutedForeground: 'hsl(25 5.3% 44.7%)',
-    accent: 'hsl(30 65% 60%)',
-    accentForeground: 'hsl(60 9.1% 97.8%)',
-    destructive: 'hsl(0 72.2% 50.6%)',
-    destructiveForeground: 'hsl(60 9.1% 97.8%)',
-    border: 'hsl(20 5.9% 90%)',
-    input: 'hsl(20 5.9% 90%)',
-    ring: 'hsl(12 91% 55%)',
   };
 
   return (
@@ -149,21 +198,8 @@ export default function ExploreUsers() {
                 }}
                 onClick={() => setViewMode('grid')}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="3" width="7" height="7" />
-                  <rect x="14" y="3" width="7" height="7" />
-                  <rect x="14" y="14" width="7" height="7" />
-                  <rect x="3" y="14" width="7" height="7" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
                 </svg>
               </Button>
               <Button
@@ -181,23 +217,8 @@ export default function ExploreUsers() {
                 }}
                 onClick={() => setViewMode('list')}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="8" y1="6" x2="21" y2="6" />
-                  <line x1="8" y1="12" x2="21" y2="12" />
-                  <line x1="8" y1="18" x2="21" y2="18" />
-                  <line x1="3" y1="6" x2="3.01" y2="6" />
-                  <line x1="3" y1="12" x2="3.01" y2="12" />
-                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
                 </svg>
               </Button>
             </div>
@@ -211,75 +232,35 @@ export default function ExploreUsers() {
             animate="visible"
             variants={{
               hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1,
-                },
-              },
+              visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
             }}
           >
             {filteredUsers.map((user) => (
               <motion.div
                 key={user.id}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 },
-                }}
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
               >
                 <Link to={`/explore/${user.username}`} className="block h-full">
                   <Card
                     className="overflow-hidden h-full border-2 transition-all duration-300"
-                    style={{
-                      backgroundColor: colors.card,
-                      color: colors.cardForeground,
-                      borderColor: 'transparent',
-                    }}
+                    style={{ backgroundColor: colors.card, color: colors.cardForeground, borderColor: 'transparent' }}
                   >
                     <CardContent className="p-0">
-                      <div
-                        className="h-24"
-                        style={{
-                          background: `linear-gradient(to right, ${colors.accent}4D, ${colors.secondary})`,
-                        }}
-                      ></div>
+                      <div className="h-24" style={{ background: `linear-gradient(to right, ${colors.accent}4D, ${colors.secondary})` }}></div>
                       <div className="p-6 pt-0 -mt-12">
-                        <Avatar
-                          className="h-20 w-20 border-4"
-                          style={{ borderColor: colors.background }}
-                        >
+                        <Avatar className="h-20 w-20 border-4" style={{ borderColor: colors.background }}>
                           <AvatarImage src={user.imageUrl} />
-                          <AvatarFallback>
-                            {user.username.substring(0, 2).toUpperCase()}
-                          </AvatarFallback>
+                          <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
-                        <h3 className="text-xl font-semibold mt-3">
-                          {user.username}
-                        </h3>
-                        <p
-                          className="text-sm mb-4"
-                          style={{ color: colors.mutedForeground }}
-                        >
-                          {user.email}
-                        </p>
+                        <h3 className="text-xl font-semibold mt-3">{user.username}</h3>
+                        <p className="text-sm mb-4" style={{ color: colors.mutedForeground }}>{user.email}</p>
                         <p className="text-sm mb-4 line-clamp-2">{user.bio}</p>
                         <div className="flex items-center justify-between">
-                          <Badge
-                            variant="outline"
-                            style={{
-                              backgroundColor: `${colors.accent}1A`,
-                              color: colors.accent,
-                              borderColor: `${colors.accent}33`,
-                            }}
-                          >
+                          <Badge variant="outline" style={{ backgroundColor: `${colors.accent}1A`, color: colors.accent, borderColor: `${colors.accent}33` }}>
                             View Profile
                           </Badge>
-                          <span
-                            className="text-xs"
-                            style={{ color: colors.mutedForeground }}
-                          >
-                            Joined{' '}
-                            {new Date(user.createdAt).toLocaleDateString()}
+                          <span className="text-xs" style={{ color: colors.mutedForeground }}>
+                            Joined {new Date(user.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
@@ -296,75 +277,41 @@ export default function ExploreUsers() {
             animate="visible"
             variants={{
               hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1,
-                },
-              },
+              visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
             }}
           >
             {filteredUsers.map((user) => (
               <motion.div
                 key={user.id}
-                variants={{
-                  hidden: { opacity: 0, x: -20 },
-                  visible: { opacity: 1, x: 0 },
-                }}
+                variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }}
               >
                 <Link to={`/explore/${user.username}`} className="block">
                   <Card
                     className="overflow-hidden border transition-all duration-300"
-                    style={{
-                      backgroundColor: colors.card,
-                      color: colors.cardForeground,
-                      borderColor: colors.border,
-                    }}
+                    style={{ backgroundColor: colors.card, color: colors.cardForeground, borderColor: colors.border }}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-4">
                         <Avatar className="h-16 w-16">
                           <AvatarImage src={user.imageUrl} />
-                          <AvatarFallback>
-                            {user.username.substring(0, 2).toUpperCase()}
-                          </AvatarFallback>
+                          <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <h3 className="text-lg font-semibold">
-                            {user.username}
-                          </h3>
+                          <h3 className="text-lg font-semibold">{user.username}</h3>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm">
-                            <span
-                              className="flex items-center"
-                              style={{ color: colors.mutedForeground }}
-                            >
-                              <Mail className="mr-1 h-3 w-3" />
-                              {user.email}
+                            <span className="flex items-center" style={{ color: colors.mutedForeground }}>
+                              <Mail className="mr-1 h-3 w-3" />{user.email}
                             </span>
-                            <span
-                              className="hidden sm:inline"
-                              style={{ color: colors.mutedForeground }}
-                            >
-                              •
-                            </span>
-                            <span
-                              className="flex items-center"
-                              style={{ color: colors.mutedForeground }}
-                            >
-                              <Calendar className="mr-1 h-3 w-3" />
-                              Joined {formatDate(user.createdAt)}
+                            <span className="hidden sm:inline" style={{ color: colors.mutedForeground }}>•</span>
+                            <span className="flex items-center" style={{ color: colors.mutedForeground }}>
+                              <Calendar className="mr-1 h-3 w-3" />Joined {formatDate(user.createdAt)}
                             </span>
                           </div>
-                          <p className="text-sm mt-2 line-clamp-2">
-                            {user.bio}
-                          </p>
+                          <p className="text-sm mt-2 line-clamp-2">{user.bio}</p>
                         </div>
                         <Button
                           className="shrink-0 hover:bg-accent/90"
-                          style={{
-                            backgroundColor: colors.accent,
-                            color: colors.accentForeground,
-                          }}
+                          style={{ backgroundColor: colors.accent, color: colors.accentForeground }}
                         >
                           <User className="mr-2 h-4 w-4" />
                           View Profile

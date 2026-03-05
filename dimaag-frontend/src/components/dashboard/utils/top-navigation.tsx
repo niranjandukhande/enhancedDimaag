@@ -21,12 +21,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { AddContentModal } from './addModel';
 import { ProfileModalDesign1 } from './profileDesign';
 import { SignOutButton, useUser } from '@clerk/clerk-react';
-// import { AddContentModal } from "@/components/add-content-modal";
-// import { ProfileModalDesign1 } from "./profile-modal-design1";
 
-export function TopNavigation() {
-  // const pathname = usePathname();
+interface TopNavigationProps {
+  searchQuery?: string;
+  onSearchChange?: (value: string) => void;
+}
 
+export function TopNavigation({ searchQuery, onSearchChange }: TopNavigationProps) {
   const { user } = useUser();
 
   const pathname = useLocation().pathname;
@@ -76,7 +77,6 @@ export function TopNavigation() {
                       <span className="text-lg font-semibold  text-black">
                         enhancedDimaag
                       </span>
-                      {/* ContentHub */}
                     </Link>
                     <nav className="flex flex-col gap-4">
                       <Link
@@ -103,20 +103,6 @@ export function TopNavigation() {
                 className="hidden items-center gap-2 md:flex"
               >
                 <div className="rounded-md bg-accent/10 p-1">
-                  {/* <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6 text-black"
-                  >
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                    <path d="M2 17l10 5 10-5" />
-                    <path d="M2 12l10 5 10-5" />
-                  </svg> */}
                   <Brain />
                 </div>
                 <span className="text-lg font-semibold  text-black">
@@ -198,6 +184,8 @@ export function TopNavigation() {
                   <Input
                     type="search"
                     placeholder="Search content..."
+                    value={searchQuery ?? ''}
+                    onChange={(e) => onSearchChange?.(e.target.value)}
                     className={`w-full rounded-full border-accent/20 bg-accent/5 pl-8 pr-4 focus-visible:ring-accent ${
                       isSearchExpanded ? 'block' : 'hidden md:block'
                     }`}
