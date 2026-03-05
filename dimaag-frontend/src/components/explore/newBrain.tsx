@@ -102,7 +102,7 @@ export default function UserProfileAlt() {
   console.log(username);
 
   const api = useAxiosClient();
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading: _isLoading, isError } = useQuery({
     queryKey: ['brain', username],
     queryFn: async () => {
       const res = await api.get(`/permission/${username}`);

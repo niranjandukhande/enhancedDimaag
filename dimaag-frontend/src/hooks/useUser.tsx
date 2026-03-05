@@ -9,7 +9,7 @@ export const useUser = () => {
 
   const api = useAxiosClient();
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading: _isLoading, isError } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
       const response = await api.get('/user/all');

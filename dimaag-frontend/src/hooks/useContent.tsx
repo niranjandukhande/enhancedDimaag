@@ -8,7 +8,7 @@ export const useContent = (pageNumber?: Number) => {
   const { setContents, contents } = useContentStore();
   const api = useAxiosClient();
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading: _isLoading, isError } = useQuery({
     queryKey: ['content', pageNumber],
     queryFn: async () => {
       const response = await api.get('/content', {

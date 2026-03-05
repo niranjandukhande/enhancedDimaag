@@ -165,7 +165,7 @@ export default function ContentDetail() {
   const contentone = allContents.find((item) => item.id === params.id);
   const {
     data,
-    isLoading: isLoading2,
+    isLoading: _isLoading2,
     isError,
   } = useQuery({
     queryKey: ['peopleWithPermission', contentone?.id],
